@@ -249,13 +249,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 80520248}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.3641242, y: 0.6225556, z: -0.4016792, w: 0.56435096}
-  m_LocalPosition: {x: -199.99338, y: 1701.2949, z: 444.8222}
+  m_LocalRotation: {x: 0.4554162, y: 0.544545, z: -0.5023867, w: 0.493634}
+  m_LocalPosition: {x: 336, y: 945, z: -31}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 85.388, y: 95.614, z: -0.001}
 --- !u!1 &484994121
 GameObject:
   m_ObjectHideFlags: 0
@@ -1082,6 +1082,10 @@ PrefabInstance:
       propertyPath: width
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 502134791597035149, guid: 90e304724caa8574b848f50e791c83c2, type: 3}
+      propertyPath: arrowPrefab
+      value: 
+      objectReference: {fileID: 919132149155446097, guid: 31390d1f837b9b143bfe7c8421c9da1c, type: 3}
     - target: {fileID: 3879456599183557431, guid: 90e304724caa8574b848f50e791c83c2, type: 3}
       propertyPath: m_Name
       value: Edge

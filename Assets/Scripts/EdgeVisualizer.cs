@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class EdgeVisualizer : MonoBehaviour
@@ -7,6 +8,7 @@ public class EdgeVisualizer : MonoBehaviour
     private Vector3 endPosition;
 
     [SerializeField] private float width = 0.5f;
+    [SerializeField] private GameObject arrowPrefab;
 
     public void Initialize(Edge data)
     {
@@ -14,6 +16,7 @@ public class EdgeVisualizer : MonoBehaviour
         startPosition = new Vector3(data.Node1.Coordinates.x, 0, data.Node1.Coordinates.y);
         endPosition = new Vector3(data.Node2.Coordinates.x, 0, data.Node2.Coordinates.y);
         RenderEdge();
+        Direction(data);
         
     }
 
@@ -40,5 +43,27 @@ public class EdgeVisualizer : MonoBehaviour
         lineRenderer.SetPosition(0, startPosition);
         lineRenderer.SetPosition(1, endPosition);
     } 
+
+    void Direction (Edge edge)
+    {
+        if (edge.Power>0) //flowing from Node1 to Node2
+        {
+            Vector3 direction = (endPosition - startPosition).normalized;
+            GameObject arrow = Instantiate(arrowPrefab, endPosition - direction * 6f, Quaternion.LookRotation(direction)*Quaternion.Euler(-90,0,0), transform);
+            arrow.name = "Arrow_" + edge.Id;
+        }
+        else if (edge.Power<0) //flowing from Node2 to Node1
+        {
+            Vector3 direction = (startPosition - endPosition).normalized;
+            GameObject arrow = Instantiate(arrowPrefab, startPosition - direction * 6f, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
+            arrow.name = "Arrow_" + edge.Id;
+        }
+        else
+        {
+            // No power flow, do not instantiate an arrow
+            
+        }
+
+    }
     
 }

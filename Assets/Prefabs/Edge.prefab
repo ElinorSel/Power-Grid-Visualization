@@ -45,3 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EdgeVisualizer
   width: 2
+  arrowPrefab: {fileID: 919132149155446097, guid: 31390d1f837b9b143bfe7c8421c9da1c, type: 3}

@@ -36,11 +36,11 @@ public class GraphManager : MonoBehaviour
     }
 
     void InstantiateNodes()
-    {
+    { 
+        GameObject nodeParent = new GameObject("Nodes");
         foreach (Node node in nodes)
         {
-            Debug.Log("Instantiating Node: " + node.VoltageLevelId);
-            GameObject nodeObject = Instantiate(nodePrefab);
+            GameObject nodeObject = Instantiate(nodePrefab, nodeParent.transform);
             nodeObject.name = "Node_" + node.VoltageLevelId;
             nodeObject.GetComponent<NodeVisualizer>().Initialize(node);
         }
@@ -48,9 +48,10 @@ public class GraphManager : MonoBehaviour
 
     void InstantiateEdges()
     {
+        GameObject edgeParent = new GameObject("Edges");
         foreach (Edge edge in edges)
         {
-            GameObject edgeObject = Instantiate(edgePrefab); 
+            GameObject edgeObject = Instantiate(edgePrefab, edgeParent.transform); 
             edgeObject.name = "Edge_" + edge.Id;
             edgeObject.GetComponent<EdgeVisualizer>().Initialize(edge);
         }

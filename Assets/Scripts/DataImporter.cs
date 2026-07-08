@@ -29,6 +29,10 @@ public class DataImporter : MonoBehaviour
             edges.Add(edge);
             //edge.DebugPrintData();
 
+            //calculate load for each edge
+            edge.Load = Mathf.Sqrt(Mathf.Pow(edge.Power, 2) + Mathf.Pow(edge.ReactivePower, 2)) / edge.NormalMVALimit;
+            Debug.Log("Edge " + edge.Id + " Load: " + edge.Load);
+
         }
     }
 
