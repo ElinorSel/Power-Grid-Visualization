@@ -1,19 +1,26 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class Node : MonoBehaviour
+public class Node
 {
-    public string voltageLevelId;
+    private float vMagnitude;
+    private float vAngle = 0;
 
-    public float vMagnitude;
+    public string VoltageLevelId {get; set;}
 
-    public Vector2 coordinates;
+    public Vector2 Coordinates {get; set;}
 
-    [SerializeField] public float vAngle = 0;
-    [SerializeField] public List<Edge> edges;
+    public Node(float vMagnitude, float vAngle, string voltageLevel, Vector2 coordinates)
+    {
+    
+        this.vMagnitude = vMagnitude;
+        this.vAngle = vAngle;
+        this.VoltageLevelId = voltageLevel;
+        this.Coordinates = coordinates;
+    }
 
     public void DebugPrintData()
     {
-        Debug.Log("Node Voltage Level ID: " + voltageLevelId + ", Voltage Magnitude: " + vMagnitude + ", Voltage Angle: " + vAngle + ", Coordinates: " + coordinates);
+        Debug.Log("Node Voltage Level ID: " + VoltageLevelId + ", Voltage Magnitude: " + vMagnitude + ", Voltage Angle: " + vAngle + ", Coordinates: " + Coordinates);
     }
 }

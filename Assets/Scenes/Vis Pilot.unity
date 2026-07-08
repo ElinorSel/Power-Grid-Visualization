@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.3584906, g: 0.3584906, b: 0.3584906, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: ec46d2188d4b8774e847e75f1e12a8db, type: 2}
+  m_SkyboxMaterial: {fileID: 10756, guid: 0000000000000000e000000000000000, type: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -241,8 +241,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 585109294}
-  - component: {fileID: 585109293}
   - component: {fileID: 585109295}
+  - component: {fileID: 585109296}
   m_Layer: 0
   m_Name: Viz Manager
   m_TagString: Untagged
@@ -250,18 +250,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &585109293
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 585109292}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fb7e01861168494986ff38de538dbf6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!4 &585109294
 Transform:
   m_ObjectHideFlags: 0
@@ -291,6 +279,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DataImporter
   filePathEdges: Assets/Data/data_starter_kit/consolidated_lines.csv
   filePathNodes: Assets/Data/data_starter_kit/consolidated_nodes.csv
+  ready: 0
+--- !u!114 &585109296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 585109292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64861c1637a1c4c439edc3a77c40044b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GraphManager
+  edgePrefab: {fileID: 3879456599183557431, guid: 90e304724caa8574b848f50e791c83c2, type: 3}
+  nodePrefab: {fileID: 3420277170275869662, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
 --- !u!1001 &1373153106
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -584,6 +587,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+--- !u!114 &1486417518 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4730389768752129531, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
+  m_PrefabInstance: {fileID: 1009333884166733297}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1548251155
 GameObject:
   m_ObjectHideFlags: 0
@@ -906,6 +920,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Node
       objectReference: {fileID: 0}
+    - target: {fileID: 9104133582072547604, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
+      propertyPath: nodeID
+      value: 
+      objectReference: {fileID: 1486417518}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -919,6 +937,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 502134791597035149, guid: 90e304724caa8574b848f50e791c83c2, type: 3}
+      propertyPath: width
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3879456599183557431, guid: 90e304724caa8574b848f50e791c83c2, type: 3}
       propertyPath: m_Name
       value: Edge

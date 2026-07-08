@@ -7,12 +7,15 @@ public class DataImporter : MonoBehaviour
 {
     [SerializeField] private string filePathEdges;
     [SerializeField] private string filePathNodes;
-    private List<Edge> edges;
-    private List<Node> nodes;
+    public List<Edge> edges {get; set;}
+    public List<Node> nodes {get; set;}
+    public bool ready = false;
     void Start()
     {
         importEdges();
         importNodes();
+        ConnectEdgesToNodes();
+        ready = true;
     }
 
     void importEdges()
@@ -22,19 +25,9 @@ public class DataImporter : MonoBehaviour
         edges = new List<Edge>();
         for(int i = 1; i < data_values.Count; i++)
         {
-            Edge edge = new Edge();
-            edge.id = data_values[i][0];
-            edge.type = data_values[i][1]; 
-            edge.voltageLevel1id = data_values[i][2];
-            edge.isConnected1 = bool.Parse((data_values[i][3]).ToLower());
-            edge.voltageLevel2id = data_values[i][4];
-            edge.isConnected2 = bool.Parse((data_values[i][5]).ToLower());
-            edge.power = float.Parse(data_values[i][6]);
-            edge.reactivePower = float.Parse(data_values[i][7]);
-            edge.current = float.Parse(data_values[i][8]);
-            edge.normalMVALimit = float.Parse(data_values[i][13]);
+            Edge edge = new Edge(data_values[i][0], data_values[i][1], data_values[i][2], bool.Parse((data_values[i][3]).ToLower()), data_values[i][4], bool.Parse((data_values[i][5]).ToLower()), float.Parse(data_values[i][6]), float.Parse(data_values[i][7]), float.Parse(data_values[i][8]), float.Parse(data_values[i][13]));
             edges.Add(edge);
-            edge.DebugPrintData();
+            //edge.DebugPrintData();
 
         }
     }
@@ -46,14 +39,33 @@ public class DataImporter : MonoBehaviour
         nodes = new List<Node>();
         for(int i = 1; i < data_values.Count; i++)
         {
-            Node node = new Node();
-            node.vMagnitude = float.Parse(data_values[i][1]);
-            node.vAngle = float.Parse(data_values[i][2]);
-            node.voltageLevelId = data_values[i][3];
-            node.coordinates = new Vector2(float.Parse(data_values[i][4]), float.Parse(data_values[i][5]));
+            Node node = new Node(float.Parse(data_values[i][1]), float.Parse(data_values[i][2]), data_values[i][3], new Vector2(float.Parse(data_values[i][4]), float.Parse(data_values[i][5])));
             nodes.Add(node);
-            node.DebugPrintData();
+            //node.DebugPrintData();
         }
         
+    }
+
+    void ConnectEdgesToNodes()
+    {
+        for(int i = 0; i < edges.Count; i++)
+        {
+            for(int j = 0; j < nodes.Count; j++)
+            {
+                if(edges[i].VoltageLevel1Id == nodes[j].VoltageLevelId)
+                {
+                    edges[i].Node1 = nodes[j];
+                    Debug.Log("Edge " + edges[i].Id + " connected to Node1 " + nodes[j].VoltageLevelId);
+
+                }
+                
+                if(edges[i].VoltageLevel2Id == nodes[j].VoltageLevelId)
+                {
+                    edges[i].Node2 = nodes[j];
+                    Debug.Log("Edge " + edges[i].Id + " connected to Node2 " + nodes[j].VoltageLevelId);
+                }
+
+            }
+        }
     }
 }

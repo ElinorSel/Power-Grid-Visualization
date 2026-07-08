@@ -1,0 +1,58 @@
+using UnityEngine;
+using System.Collections.Generic;
+
+public class GraphManager : MonoBehaviour
+{
+    private DataImporter dataImporter;
+    private List<Edge> edges;
+    private List<Node> nodes;
+    [SerializeField] private GameObject edgePrefab;
+    [SerializeField] private GameObject nodePrefab;
+
+    private bool instantiated = false;
+
+    void Start()
+    {
+        dataImporter = GetComponent<DataImporter>();
+        if (dataImporter == null)
+        {
+            Debug.LogError("DataImporter component not found on the GameObject.");
+            return;
+        }
+
+    }
+
+    void Update()
+    {
+        if (dataImporter.ready && !instantiated)
+        {
+            Debug.Log("DataImporter is ready. Instantiating nodes and edges.");
+            edges = dataImporter.edges;
+            nodes = dataImporter.nodes;
+            InstantiateNodes();
+            InstantiateEdges();
+            instantiated = true;
+        }
+    }
+
+    void InstantiateNodes()
+    {
+        foreach (Node node in nodes)
+        {
+            Debug.Log("Instantiating Node: " + node.VoltageLevelId);
+            GameObject nodeObject = Instantiate(nodePrefab);
+            nodeObject.name = "Node_" + node.VoltageLevelId;
+            nodeObject.GetComponent<NodeVisualizer>().Initialize(node);
+        }
+    }
+
+    void InstantiateEdges()
+    {
+        foreach (Edge edge in edges)
+        {
+            GameObject edgeObject = Instantiate(edgePrefab); 
+            edgeObject.name = "Edge_" + edge.Id;
+            edgeObject.GetComponent<EdgeVisualizer>().Initialize(edge);
+        }
+    }
+}
