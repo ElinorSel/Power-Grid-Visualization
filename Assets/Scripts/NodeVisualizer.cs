@@ -14,13 +14,13 @@ public class NodeVisualizer : MonoBehaviour
         Data = data;
 
         // [Height Mapping]
-        switch (VisualizationSettings.Instance.HeightMapping)
+        switch (VisualizationSettings.Instance.HeightMappingNode)
         {
             case VisualizationSettings.NodeHeightMapping.None:
                 data.ZOffset = 0f;
                 break;
             case VisualizationSettings.NodeHeightMapping.VoltageAngle:
-                CalculateZOffsetVoltageAngle(data);
+                data.ZOffset = CalculateZOffsetVoltageAngle(data);
                 break;
             default:
                 Debug.LogWarning("Unknown / Unimplementedheight mapping option.");
@@ -28,16 +28,16 @@ public class NodeVisualizer : MonoBehaviour
         }
 
         //[Size Mapping]
-        switch (VisualizationSettings.Instance.SizeMapping)
+        switch (VisualizationSettings.Instance.SizeMappingNode)
         {
             case VisualizationSettings.NodeSizeMapping.None:
                 sizeMapping = VisualizationSettings.Instance.SizeScaleFactor;
                 break;
             case VisualizationSettings.NodeSizeMapping.VoltageMagnitude:
-                CalculateSizeMappingVoltageMagnitude(data);
+                sizeMapping = CalculateSizeMappingVoltageMagnitude(data);
                 break;
             case VisualizationSettings.NodeSizeMapping.VoltageAngle:
-                CalculateSizeMappingVoltageAngle(data);
+                sizeMapping = CalculateSizeMappingVoltageAngle(data);
                 break;
             default:
                 Debug.LogWarning("Unknown / Unimplemented size mapping option.");
@@ -52,22 +52,22 @@ public class NodeVisualizer : MonoBehaviour
         else nodeID.text = "";
     }
 
-    public void CalculateZOffsetVoltageAngle(Node data)
+    public float CalculateZOffsetVoltageAngle(Node data)
     {
         //TODO: Implement a more sophisticated method to calculate the zOffset
-        data.ZOffset = data.VAngle * VisualizationSettings.Instance.SizeScaleFactor;
+        return data.VAngle * VisualizationSettings.Instance.SizeScaleFactor;
     }
 
-    public void CalculateSizeMappingVoltageMagnitude(Node data)
+    public float CalculateSizeMappingVoltageMagnitude(Node data)
     {
         //TODO: Implement a more sophisticated method to calculate the sizeMapping
-        sizeMapping = data.VMagnitude * 0.02f * VisualizationSettings.Instance.SizeScaleFactor;
+        return data.VMagnitude * 0.02f * VisualizationSettings.Instance.SizeScaleFactor;
     }
 
-        public void CalculateSizeMappingVoltageAngle(Node data)
+        public float CalculateSizeMappingVoltageAngle(Node data)
     {
         //TODO: Implement a more sophisticated method to calculate the sizeMapping
-        sizeMapping = data.VAngle * 0.2f* VisualizationSettings.Instance.SizeScaleFactor;
+        return data.VAngle * 0.2f* VisualizationSettings.Instance.SizeScaleFactor;
     }
     
 }

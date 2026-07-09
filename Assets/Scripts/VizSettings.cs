@@ -26,34 +26,66 @@ public class VisualizationSettings : MonoBehaviour
         VoltageMagnitude,
     }
 
+    public enum EdgeColorMapping
+    {
+        None,
+        Load,
+    }
 
-    [Header("Node Mapping")]
-    [SerializeField]
-    private NodeHeightMapping heightMapping = NodeHeightMapping.None;
-    [SerializeField]
-    private float heightScaleFactor;
+    public enum EdgeWidthMapping{
+        None,
+        MVALimit,
+    }
 
-    [SerializeField]
-    private NodeColorMapping colorMapping = NodeColorMapping.None;
-
-    [SerializeField]
-    private NodeSizeMapping sizeMapping = NodeSizeMapping.None;
-
-    [SerializeField]
-    private float sizeScaleFactor;
-
+    //------------------------------ INSPECTOR SETTINGS------------------------------
 
     [Header("General Settings")]
     [SerializeField]
     private bool showLabels = true;
 
 
-    public NodeHeightMapping HeightMapping => heightMapping;
-    public NodeColorMapping ColorMapping => colorMapping;
-    public NodeSizeMapping SizeMapping => sizeMapping;
+    //------------------------------
+    [Header("Node Mapping")]
+    //------------------------------
+    [SerializeField]
+    private NodeHeightMapping heightMappingNode = NodeHeightMapping.None;
+    [SerializeField]
+    private float heightScaleFactorNode = 1f;
+
+    [SerializeField]
+    private NodeColorMapping colorMappingNode = NodeColorMapping.None;
+
+    [SerializeField]
+    private NodeSizeMapping sizeMappingNode = NodeSizeMapping.None;
+
+    [SerializeField]
+    private float sizeScaleFactorNode;
+
+    //------------------------------
+    [Header("Edge Mapping")]
+    //------------------------------
+    [SerializeField]
+    private EdgeColorMapping colorMappingEdge = EdgeColorMapping.None;
+
+    [SerializeField]
+    private EdgeWidthMapping widthMappingEdge = EdgeWidthMapping.MVALimit;
+
+    [SerializeField]
+    private float widthScaleFactorEdge = 1f;
+
+
+
+
+//------------------------------ GET METHODS ------------------------------
+    public NodeHeightMapping HeightMappingNode => heightMappingNode;
+    public NodeColorMapping ColorMappingNode => colorMappingNode;
+    public NodeSizeMapping SizeMappingNode => sizeMappingNode;
+    public EdgeColorMapping ColorMappingEdge => colorMappingEdge;
+    public EdgeWidthMapping WidthMappingEdge => widthMappingEdge;
     public bool ShowLabels => showLabels;
-    public float HeightScaleFactor => heightScaleFactor;
-    public float SizeScaleFactor => sizeScaleFactor;
+    public float HeightScaleFactor => heightScaleFactorNode;
+    public float SizeScaleFactor => sizeScaleFactorNode;
+    public float WidthScaleFactorEdge => widthScaleFactorEdge;
 
 
     private void Awake()
@@ -70,20 +102,20 @@ public class VisualizationSettings : MonoBehaviour
 
 
 
-    // Setters for the UI to change settings
+//------------------------------ SET METHODS ------------------------------
     public void SetHeightMapping(NodeHeightMapping mapping)
     {
-        heightMapping = mapping;
+        heightMappingNode = mapping;
     }
 
     public void SetColorMapping(NodeColorMapping mapping)
     {
-        colorMapping = mapping;
+        colorMappingNode = mapping;
     }
 
     public void SetSizeMapping(NodeSizeMapping mapping)
     {
-        sizeMapping = mapping;
+        sizeMappingNode = mapping;
     }
 
     public void SetShowLabels(bool show)
@@ -93,11 +125,21 @@ public class VisualizationSettings : MonoBehaviour
 
     public void SetHeightScaleFactor(float scaleFactor)
     {
-        heightScaleFactor = scaleFactor;
+        heightScaleFactorNode = scaleFactor;
     }
 
     public void SetSizeScaleFactor(float scaleFactor)
     {
-        sizeScaleFactor = scaleFactor;
+        sizeScaleFactorNode = scaleFactor;
+    }
+
+    public void SetEdgeColorMapping(EdgeColorMapping mapping)
+    {
+        colorMappingEdge = mapping;
+    }
+
+    public void SetEdgeWidthMapping(EdgeWidthMapping mapping)
+    {
+        widthMappingEdge = mapping;
     }
 }

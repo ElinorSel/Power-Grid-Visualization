@@ -14,6 +14,22 @@ public class EdgeVisualizer : MonoBehaviour
         Data = data;
         startPosition = new Vector3(data.Node1.Coordinates.x, data.Node1.ZOffset, data.Node1.Coordinates.y);
         endPosition = new Vector3(data.Node2.Coordinates.x, data.Node2.ZOffset, data.Node2.Coordinates.y);
+
+        // [Width Settings]
+        switch (VisualizationSettings.Instance.WidthMappingEdge)
+        {
+            case VisualizationSettings.EdgeWidthMapping.None:
+                width = VisualizationSettings.Instance.WidthScaleFactorEdge; 
+                break;
+            case VisualizationSettings.EdgeWidthMapping.MVALimit:
+                 width = CalculateWidthMVALimit(data); 
+                break;
+            default:
+                Debug.LogWarning("Unknown / Unimplemented width mapping option for Edges.");
+                break;
+        }
+
+
         RenderEdge();
         Direction(data);
         
@@ -67,6 +83,11 @@ public class EdgeVisualizer : MonoBehaviour
             // If there is no flow we could change the color of the line
         }
 
+    }
+
+    float CalculateWidthMVALimit(Edge edge)
+    {
+        return (edge.NormalMVALimit / 100f) * VisualizationSettings.Instance.WidthScaleFactorEdge; // Scale factor can be adjusted as needed
     }
     
 }
