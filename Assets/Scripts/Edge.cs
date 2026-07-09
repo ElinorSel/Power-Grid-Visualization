@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class Edge
 {
@@ -17,8 +18,9 @@ public class Edge
     public float NormalMVALimit {get; set;}
 
     public float Load {get; set;}
+    public TimeSpan TimeStamp {get; set;}
 
-    public Edge(string id, string type, string voltageLevel1id, bool isConnected1, string voltageLevel2id, bool isConnected2, float power, float reactivePower, float current, float normalMVALimit)
+    public Edge(string id, string type, string voltageLevel1id, bool isConnected1, string voltageLevel2id, bool isConnected2, float power, float reactivePower, float current, float normalMVALimit, TimeSpan timeStamp)
     {
         this.Id = id;
         this.type = type;
@@ -30,11 +32,12 @@ public class Edge
         this.ReactivePower = reactivePower;
         this.current = current;
         this.NormalMVALimit = normalMVALimit;
+        this.TimeStamp = timeStamp;
     }
 
     public void DebugPrintData()
     {
-        Debug.Log("Edge ID: " + Id + ", Edge Type: " + type + ", Voltage Level 1 ID: " + VoltageLevel1Id + "Is Connected 1: " + isConnected1 + ", Voltage Level 2 ID: " + VoltageLevel2Id + ", Is Connected 2: " + isConnected2 + ", Power: " + Power + ", Reactive Power: " + ReactivePower + ", Current: " + current + ", Normal MVA Limit: " + NormalMVALimit);
+        Debug.Log("Edge ID: " + Id + ", Edge Type: " + type + ", Voltage Level 1 ID: " + VoltageLevel1Id + "Is Connected 1: " + isConnected1 + ", Voltage Level 2 ID: " + VoltageLevel2Id + ", Is Connected 2: " + isConnected2 + ", Power: " + Power + ", Reactive Power: " + ReactivePower + ", Current: " + current + ", Normal MVA Limit: " + NormalMVALimit + ", TimeStamp: " + TimeStamp);
 
     }
 }

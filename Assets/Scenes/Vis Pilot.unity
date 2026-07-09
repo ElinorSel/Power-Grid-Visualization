@@ -319,7 +319,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1836398480566308131, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
 --- !u!1 &585109292
 GameObject:
@@ -366,8 +369,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfa766d02f7f3a74997abf532912bb67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataImporter
-  filePathEdges: Assets/Data/data_starter_kit/consolidated_lines.csv
-  filePathNodes: Assets/Data/data_starter_kit/consolidated_nodes.csv
+  filePathEdges: Assets/Data/timestamps/consolidated_lines_time.csv
+  filePathNodes: Assets/Data/timestamps/consolidated_nodes_time.csv
   ready: 0
 --- !u!114 &585109296
 MonoBehaviour:
