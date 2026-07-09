@@ -16,12 +16,26 @@ public class EdgeVisualizer : MonoBehaviour
         endPosition = new Vector3(data.Node2.Coordinates.x, data.Node2.ZOffset, data.Node2.Coordinates.y);
 
         // [Width Settings]
-        switch (VisualizationSettings.Instance.WidthMappingEdge)
+        switch (VisualizationSettings.Instance.EdgeWidthMapping)
         {
-            case VisualizationSettings.EdgeWidthMapping.None:
-                width = VisualizationSettings.Instance.WidthScaleFactorEdge; 
+            case VisualizationSettings.EdgeWidthMappingOption.None:
+                width = VisualizationSettings.Instance.EdgeWidthScaleFactor; 
                 break;
-            case VisualizationSettings.EdgeWidthMapping.MVALimit:
+            case VisualizationSettings.EdgeWidthMappingOption.MVALimit:
+                 width = CalculateWidthMVALimit(data); 
+                break;
+            default:
+                Debug.LogWarning("Unknown / Unimplemented width mapping option for Edges.");
+                break;
+        }
+
+        // [Width Settings]
+        switch (VisualizationSettings.Instance.EdgeWidthMapping)
+        {
+            case VisualizationSettings.EdgeWidthMappingOption.None:
+                width = VisualizationSettings.Instance.EdgeWidthScaleFactor; 
+                break;
+            case VisualizationSettings.EdgeWidthMappingOption.MVALimit:
                  width = CalculateWidthMVALimit(data); 
                 break;
             default:
@@ -87,7 +101,7 @@ public class EdgeVisualizer : MonoBehaviour
 
     float CalculateWidthMVALimit(Edge edge)
     {
-        return (edge.NormalMVALimit / 100f) * VisualizationSettings.Instance.WidthScaleFactorEdge; // Scale factor can be adjusted as needed
+        return (edge.NormalMVALimit / 100f) * VisualizationSettings.Instance.EdgeWidthScaleFactor; // Scale factor can be adjusted as needed
     }
     
 }
