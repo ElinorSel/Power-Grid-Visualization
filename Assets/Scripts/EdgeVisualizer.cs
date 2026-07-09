@@ -12,8 +12,8 @@ public class EdgeVisualizer : MonoBehaviour
     public void Initialize(Edge data)
     {
         Data = data;
-        startPosition = new Vector3(data.Node1.Coordinates.x, 0, data.Node1.Coordinates.y);
-        endPosition = new Vector3(data.Node2.Coordinates.x, 0, data.Node2.Coordinates.y);
+        startPosition = new Vector3(data.Node1.Coordinates.x, data.Node1.ZOffset, data.Node1.Coordinates.y);
+        endPosition = new Vector3(data.Node2.Coordinates.x, data.Node2.ZOffset, data.Node2.Coordinates.y);
         RenderEdge();
         Direction(data);
         
