@@ -50,13 +50,13 @@ public class VisualizationSettings : MonoBehaviour
     [SerializeField]
     private NodeHeightMappingOption nodeHeightMapping = NodeHeightMappingOption.None;
     [SerializeField]
-    private float nodeHeightScaleFactor = 1f;
+    private float nodeHeightScaleFactor = 2f;
 
     [SerializeField]
     private NodeColorMappingOption nodeColorMapping = NodeColorMappingOption.None;
 
     [SerializeField]
-    private NodeSizeMappingOption nodeSizeMapping = NodeSizeMappingOption.None;
+    private NodeSizeMappingOption nodeSizeMapping = NodeSizeMappingOption.VoltageMagnitude;
 
     [SerializeField]
     private float nodeSizeScaleFactor;
@@ -71,7 +71,7 @@ public class VisualizationSettings : MonoBehaviour
     private EdgeWidthMappingOption edgeWidthMapping = EdgeWidthMappingOption.MVALimit;
 
     [SerializeField]
-    private float edgeWidthScaleFactor = 1f;
+    private float edgeWidthScaleFactor = 2f;
 
 
 

@@ -30,26 +30,24 @@ public class EdgeVisualizer : MonoBehaviour
         }
 
         // [Width Settings]
-        switch (VisualizationSettings.Instance.EdgeWidthMapping)
+        switch (VisualizationSettings.Instance.EdgeColorMapping)
         {
-            case VisualizationSettings.EdgeWidthMappingOption.None:
-                width = VisualizationSettings.Instance.EdgeWidthScaleFactor; 
+            case VisualizationSettings.EdgeColorMappingOption.None:
                 break;
-            case VisualizationSettings.EdgeWidthMappingOption.MVALimit:
-                 width = CalculateWidthMVALimit(data); 
+            case VisualizationSettings.EdgeColorMappingOption.Load:
                 break;
             default:
-                Debug.LogWarning("Unknown / Unimplemented width mapping option for Edges.");
+                Debug.LogWarning("Unknown / Unimplemented color mapping option for Edges.");
                 break;
         }
 
 
-        RenderEdge();
+        RenderEdge(width);
         Direction(data);
         
     }
 
-    void RenderEdge()
+    void RenderEdge(float edgeWidth)
     {
         // Add a LineRenderer component
         LineRenderer lineRenderer = gameObject.AddComponent<LineRenderer>();
@@ -60,12 +58,12 @@ public class EdgeVisualizer : MonoBehaviour
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
 
         // Set the color
-        lineRenderer.startColor = Color.red;
+        lineRenderer.startColor = Color.green;
         lineRenderer.endColor = Color.green;
 
         // Set the width
-        lineRenderer.startWidth = width;
-        lineRenderer.endWidth = width;
+        lineRenderer.startWidth = edgeWidth;
+        lineRenderer.endWidth = edgeWidth;
 
         // Set the number of vertices
         lineRenderer.positionCount = 2;
@@ -101,7 +99,9 @@ public class EdgeVisualizer : MonoBehaviour
 
     float CalculateWidthMVALimit(Edge edge)
     {
-        return (edge.NormalMVALimit / 100f) * VisualizationSettings.Instance.EdgeWidthScaleFactor; // Scale factor can be adjusted as needed
+        //return (edge.NormalMVALimit / 100f) * VisualizationSettings.Instance.EdgeWidthScaleFactor; // Scale factor can be adjusted as needed
+        float value = edge.NormalMVALimit / 100f;
+        return Mathf.Pow(value, 1.3f) * VisualizationSettings.Instance.EdgeWidthScaleFactor;
     }
     
 }

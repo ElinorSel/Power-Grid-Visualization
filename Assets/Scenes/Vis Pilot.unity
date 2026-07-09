@@ -323,10 +323,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1836398480566308131, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
 --- !u!1 &585109292
 GameObject:
@@ -403,12 +400,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 170b4b8123e8d344b9cb371198bcffc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VisualizationSettings
-  heightMapping: 1
-  heightScaleFactor: 5
-  colorMapping: 0
-  sizeMapping: 2
-  sizeScaleFactor: 3
   showLabels: 1
+  nodeHeightMapping: 0
+  nodeHeightScaleFactor: 5
+  nodeColorMapping: 0
+  nodeSizeMapping: 2
+  nodeSizeScaleFactor: 2
+  edgeColorMapping: 0
+  edgeWidthMapping: 1
+  edgeWidthScaleFactor: 2
 --- !u!1001 &1373153106
 PrefabInstance:
   m_ObjectHideFlags: 0
