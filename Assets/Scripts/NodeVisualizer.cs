@@ -4,7 +4,7 @@ using TMPro;
 public class NodeVisualizer : MonoBehaviour
 {
     public Node Data {get; set;}
-    [SerializeField] public TextMeshProUGUI nodeID;
+    [SerializeField] public TextMeshPro nodeID;
 
     public void Initialize(Node data)
     {
