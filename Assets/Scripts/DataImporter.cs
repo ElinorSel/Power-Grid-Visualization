@@ -5,71 +5,146 @@ using System.IO;
 
 public class DataImporter : MonoBehaviour
 {
-    [SerializeField] private string filePathEdges;
-    [SerializeField] private string filePathNodes;
+    [SerializeField] private int TimeRange = 24; //range of time that we go through, default 24 hours
+
+    //filepaths for data
+    [SerializeField] private string filePathConnections; //ieee188_lines.csv
+    [SerializeField] private string fileFolderPath; //path to folder containing all datafiles
+
+    //Fields for headers to make it more adaptable
+    [SerializeField] private string ConnectionsFromHeading;
+    [SerializeField] private string ConnectionsToHeading;
+    [SerializeField] private string ConnectionsEdgeIDHeading;
+    [SerializeField] private string ConnectionsInServiceHeading;
+    [SerializeField] private string ConnectionsMaxLoadHeading;
+    [SerializeField] private string NodePowerHeading;
+    [SerializeField] private string NodeAngleHeading;
+    [SerializeField] private string NodeIDHeading;
+    [SerializeField] private string EdgeIDHeading;
+    [SerializeField] private string EdgeLoadHeading;
+    [SerializeField] private string EdgePowerFromHeading;
+    [SerializeField] private string EdgePowerToHeading;
+
+    //List of nodes and edges for iterating
     public List<Edge> edges {get; set;}
     public List<Node> nodes {get; set;}
+
+    //Dictionaries of nodes and edges for quick ID lookup
+    public Dictionary<string, Node> nodeLookup = new Dictionary<string, Node>();
+    public Dictionary<string, Edge> edgeLookup = new Dictionary<string, Edge>();
+
+
+    //Bool for graphmanager
     public bool ready = false;
     void Start()
     {
-        importEdges();
-        importNodes();
+        nodes = new List<Node>();
+        edges = new List<Edge>();
         ConnectEdgesToNodes();
+        importHourNodeData();
+        importHourEdgeData();
         ready = true;
     }
 
-    void importEdges()
+        void ConnectEdgesToNodes()
     {
         CSVReader csvReader = new CSVReader();
-        List<string[]> data_values = csvReader.ReadCSVFile(filePathEdges);
-        edges = new List<Edge>();
+        List<string[]> data_values = csvReader.ReadCSVFile(filePathConnections);
+
+        //Find the index of all the headings to make it adaptable to changes
+        string[] data_headers = data_values[0];
+        int Node1IDIndex = Array.IndexOf(data_headers, ConnectionsFromHeading);
+        int Node2IDIndex = Array.IndexOf(data_headers, ConnectionsToHeading);
+        int edgeIDIndex = Array.IndexOf(data_headers, ConnectionsEdgeIDHeading);
+        int inServiceIndex = Array.IndexOf(data_headers, ConnectionsInServiceHeading);
+        int maxLoadIndex = Array.IndexOf(data_headers, ConnectionsMaxLoadHeading);
+
         for(int i = 1; i < data_values.Count; i++)
         {
-            Edge edge = new Edge(data_values[i][0], data_values[i][1], data_values[i][2], bool.Parse((data_values[i][3]).ToLower()), data_values[i][4], bool.Parse((data_values[i][5]).ToLower()), float.Parse(data_values[i][6]), float.Parse(data_values[i][7]), float.Parse(data_values[i][8]), float.Parse(data_values[i][13]));
-            edges.Add(edge);
-            //edge.DebugPrintData();
-
-            //calculate load for each edge
-            edge.Load = Mathf.Sqrt(Mathf.Pow(edge.Power, 2) + Mathf.Pow(edge.ReactivePower, 2)) / edge.NormalMVALimit;
-            Debug.Log("Edge " + edge.Id + " Load: " + edge.Load);
-
+            importNodes(data_values[i][Node1IDIndex]);
+            importNodes(data_values[i][Node2IDIndex]);
+            //have to change so it's a node object and not just the nodeID for edges
+            Node Node1 = nodeLookup[Node1IDIndex];
+            Node Node2 = nodeLookup[Node2IDIndex];
+            importEdges(data_values[i][edgeIDIndex], bool.Parse(data_values[i][inServiceIndex]), float.Parse(data_values[i][maxLoadIndex]),data_values[i], Node1, Node2);
         }
     }
 
-    void importNodes()
+    void importEdges(string ID, bool inService, float maxLoad, Node Node1, Node Node2)
     {
-        CSVReader csvReader = new CSVReader();
-        List<string[]> data_values = csvReader.ReadCSVFile(filePathNodes);
-        nodes = new List<Node>();
-        for(int i = 1; i < data_values.Count; i++)
-        {
-            Node node = new Node(float.Parse(data_values[i][1]), float.Parse(data_values[i][2]), data_values[i][3], new Vector2(float.Parse(data_values[i][4]), float.Parse(data_values[i][5])));
-            nodes.Add(node);
-            //node.DebugPrintData();
-        }
+        Edge edge = new Edge(ID, inService, maxLoad, Node1, Node2);
+        edgeLookup.Add(ID, edge); //add to dictionary
+        edges.Add(edge); //add to list
+        //edge.DebugPrintData();
+
         
     }
 
-    void ConnectEdgesToNodes()
+    void importNodes(string ID)
     {
-        for(int i = 0; i < edges.Count; i++)
+        Node node = new Node(ID);
+        nodeLookup.Add(ID, node); //add to dictionary
+        nodes.Add(node); // add to list
+        //node.DebugPrintData();
+        
+        
+    }
+
+    void importHourNodeData()
+    {
+        CSVReader csvReader = new CSVReader();
+        //looping through time
+        for (time = 0; time = TimeRange; time++)
         {
-            for(int j = 0; j < nodes.Count; j++)
+            //getting the correct file
+            string filename = Path.Combine(fileFolderPath, $"ieee118_{time}_bus.csv");
+            List<string[]> data_values = csvReader.ReadCSVFile(filename);
+
+            //getting the index of headers in the file
+            string[] data_headers = data_values[0];
+            int NodeIDIndex = Array.IndexOf(data_headers, NodeIDHeading);
+            int angleIndex = Array.IndexOf(data_headers, NodeAngleHeading);
+            int powerIndex = Array.IndexOf(data_headers, NodePowerHeading);
+
+            //looping through each line
+            for(int i = 1; i < data_values.Count; i++)
             {
-                if(edges[i].VoltageLevel1Id == nodes[j].VoltageLevelId)
-                {
-                    edges[i].Node1 = nodes[j];
-                    Debug.Log("Edge " + edges[i].Id + " connected to Node1 " + nodes[j].VoltageLevelId);
-
-                }
-                
-                if(edges[i].VoltageLevel2Id == nodes[j].VoltageLevelId)
-                {
-                    edges[i].Node2 = nodes[j];
-                    Debug.Log("Edge " + edges[i].Id + " connected to Node2 " + nodes[j].VoltageLevelId);
-                }
-
+                string nodeID = data_values[i][NodeIDIndex];
+                Node node = nodeLookup[nodeID];
+                NodeSnapshot dataSnapShot = new NodeSnapshot(float.Parse(data_values[powerIndex]), float.Parse(data_values[angleIndex]));
+                node.dataSnapshots[TimeSpan.Parse(time)] = dataSnapShot;
             }
         }
+
     }
+
+    void importHourEdgeData()
+    {
+        CSVReader csvReader = new CSVReader();
+        //looping through time
+        for (time = 0; time = TimeRange; time++)
+        {
+            //getting the correct file
+            string filename = Path.Combine(fileFolderPath, $"ieee118_{time}_line.csv");
+            List<string[]> data_values = csvReader.ReadCSVFile(filename);
+
+            //getting the index of headers in the file
+            string[] data_headers = data_values[0];
+            int EdgeIDIndex = Array.IndexOf(data_headers, EdgeIDHeading);
+            int loadPercent = Array.IndexOf(data_headers, EdgeLoadHeading);
+            int angleIndex = Array.IndexOf(data_headers, NodeAngleHeading);
+            int powerIndex = Array.IndexOf(data_headers, NodePowerHeading);
+
+            //looping through each line
+            for(int i = 1; i < data_values.Count; i++)
+            {
+                string nodeID = data_values[i][NodeIDIndex];
+                Node node = nodeLookup[nodeID];
+                DataSnapShot dataSnapShot = new DataSnapShot(data_values[angleIndex], data_values[powerIndex]);
+                node.data[TimeSpan.Parse(time)] = dataSnapShot;
+            }
+        }
+
+    }
+
 }
