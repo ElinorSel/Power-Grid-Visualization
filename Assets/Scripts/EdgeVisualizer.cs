@@ -11,6 +11,7 @@ public class EdgeVisualizer : MonoBehaviour
 
     public void Initialize(Edge data)
     {
+        /*
         Data = data;
         startPosition = new Vector3(data.Node1.Coordinates.x, data.Node1.ZOffset, data.Node1.Coordinates.y);
         endPosition = new Vector3(data.Node2.Coordinates.x, data.Node2.ZOffset, data.Node2.Coordinates.y);
@@ -44,7 +45,7 @@ public class EdgeVisualizer : MonoBehaviour
 
         RenderEdge(width);
         Direction(data);
-        
+        */
     }
 
     void RenderEdge(float edgeWidth)
@@ -73,8 +74,10 @@ public class EdgeVisualizer : MonoBehaviour
         lineRenderer.SetPosition(1, endPosition);
     } 
 
+        /*
     void Direction (Edge edge)
     {
+
         if (edge.Power>0) //flowing from Node1 to Node2
         {
             Vector3 direction = (endPosition - startPosition).normalized;
@@ -103,5 +106,7 @@ public class EdgeVisualizer : MonoBehaviour
         float value = edge.NormalMVALimit / 100f;
         return Mathf.Pow(value, 1.3f) * VisualizationSettings.Instance.EdgeWidthScaleFactor;
     }
+
+    */
     
 }
