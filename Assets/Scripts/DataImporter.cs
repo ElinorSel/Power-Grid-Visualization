@@ -64,8 +64,8 @@ public class DataImporter : MonoBehaviour
             importNodes(data_values[i][Node1IDIndex]);
             importNodes(data_values[i][Node2IDIndex]);
             //have to change so it's a node object and not just the nodeID for edges
-            Node Node1 = nodeLookup[Node1IDIndex];
-            Node Node2 = nodeLookup[Node2IDIndex];
+            Node Node1 = nodeLookup[data_values[i][Node1IDIndex]];
+            Node Node2 = nodeLookup[data_values[i][Node2IDIndex]];
             importEdges(data_values[i][edgeIDIndex], bool.Parse(data_values[i][inServiceIndex]), float.Parse(data_values[i][maxLoadIndex]),data_values[i], Node1, Node2);
         }
     }
@@ -82,10 +82,13 @@ public class DataImporter : MonoBehaviour
 
     void importNodes(string ID)
     {
-        Node node = new Node(ID);
-        nodeLookup.Add(ID, node); //add to dictionary
-        nodes.Add(node); // add to list
-        //node.DebugPrintData();
+        if (!nodeLookup.ContainsKey(ID))
+        {
+            Node node = new Node(ID);
+            nodeLookup.Add(ID, node); //add to dictionary
+            nodes.Add(node); // add to list
+            //node.DebugPrintData();
+        }
         
         
     }
@@ -94,7 +97,7 @@ public class DataImporter : MonoBehaviour
     {
         CSVReader csvReader = new CSVReader();
         //looping through time
-        for (time = 0; time = TimeRange; time++)
+        for (int time = 0; time < TimeRange; time++)
         {
             //getting the correct file
             string filename = Path.Combine(fileFolderPath, $"ieee118_{time}_bus.csv");
@@ -112,7 +115,7 @@ public class DataImporter : MonoBehaviour
                 string nodeID = data_values[i][NodeIDIndex];
                 Node node = nodeLookup[nodeID];
                 NodeSnapshot dataSnapShot = new NodeSnapshot(float.Parse(data_values[i][powerIndex]), float.Parse(data_values[i][angleIndex]));
-                node.dataSnapshots[TimeSpan.Parse(time)] = dataSnapShot;
+                node.dataSnapshots[TimeSpan.Parse(String.Parse(time))] = dataSnapShot;
             }
         }
 
@@ -140,7 +143,7 @@ public class DataImporter : MonoBehaviour
             {
                 string  edgeID = data_values[i][EdgeIDIndex];
                 Edge edge = edgeLookup[edgeID];
-                EdgeSnapShot dataSnapShot = new EdgeSnapShot(float.Parse(data_values[i][loadPercentIndex], float.Parse(data_values[i][powerFromIndex], float.Parse(data_values[i][powerToIndex]))));
+                EdgeSnapShot dataSnapShot = new EdgeSnapShot(float.Parse(data_values[i][loadPercentIndex]), float.Parse(data_values[i][powerFromIndex]), float.Parse(data_values[i][powerToIndex]));
                 edge.data[TimeSpan.Parse(time)] = dataSnapShot;
             }
         }
