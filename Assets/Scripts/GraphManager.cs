@@ -41,7 +41,7 @@ public class GraphManager : MonoBehaviour
         foreach (Node node in nodes)
         {
             GameObject nodeObject = Instantiate(nodePrefab, nodeParent.transform);
-            nodeObject.name = "Node_" + node.VoltageLevelId;
+            nodeObject.name = "Node_" + node.Id;
             nodeObject.GetComponent<NodeVisualizer>().Initialize(node);
         }
     }
