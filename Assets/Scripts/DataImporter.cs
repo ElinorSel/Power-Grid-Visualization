@@ -111,7 +111,7 @@ public class DataImporter : MonoBehaviour
             {
                 string nodeID = data_values[i][NodeIDIndex];
                 Node node = nodeLookup[nodeID];
-                NodeSnapshot dataSnapShot = new NodeSnapshot(float.Parse(data_values[powerIndex]), float.Parse(data_values[angleIndex]));
+                NodeSnapshot dataSnapShot = new NodeSnapshot(float.Parse(data_values[i][powerIndex]), float.Parse(data_values[i][angleIndex]));
                 node.dataSnapshots[TimeSpan.Parse(time)] = dataSnapShot;
             }
         }
@@ -131,17 +131,17 @@ public class DataImporter : MonoBehaviour
             //getting the index of headers in the file
             string[] data_headers = data_values[0];
             int EdgeIDIndex = Array.IndexOf(data_headers, EdgeIDHeading);
-            int loadPercent = Array.IndexOf(data_headers, EdgeLoadHeading);
-            int angleIndex = Array.IndexOf(data_headers, NodeAngleHeading);
-            int powerIndex = Array.IndexOf(data_headers, NodePowerHeading);
+            int loadPercentIndex = Array.IndexOf(data_headers, EdgeLoadHeading);
+            int powerFromIndex = Array.IndexOf(data_headers, EdgePowerFromHeading);
+            int powerToIndex = Array.IndexOf(data_headers, EdgePowerToHeading);
 
             //looping through each line
             for(int i = 1; i < data_values.Count; i++)
             {
-                string nodeID = data_values[i][NodeIDIndex];
-                Node node = nodeLookup[nodeID];
-                DataSnapShot dataSnapShot = new DataSnapShot(data_values[angleIndex], data_values[powerIndex]);
-                node.data[TimeSpan.Parse(time)] = dataSnapShot;
+                string  edgeID = data_values[i][EdgeIDIndex];
+                Edge edge = edgeLookup[edgeID];
+                EdgeSnapShot dataSnapShot = new EdgeSnapShot(float.Parse(data_values[i][loadPercentIndex], float.Parse(data_values[i][powerFromIndex], float.Parse(data_values[i][powerToIndex]))));
+                edge.data[TimeSpan.Parse(time)] = dataSnapShot;
             }
         }
 
