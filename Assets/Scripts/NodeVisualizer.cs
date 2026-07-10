@@ -10,7 +10,7 @@ public class NodeVisualizer : MonoBehaviour
 
     public void Initialize(Node data)
     {
-
+        /*
         Data = data;
 
         // [Height Mapping]
@@ -50,24 +50,34 @@ public class NodeVisualizer : MonoBehaviour
         // [Show Labels]
         if (VisualizationSettings.Instance.ShowLabels) nodeID.text = data.Id;
         else nodeID.text = "";
+    
+
+        */
     }
 
     public float CalculateZOffsetVoltageAngle(Node data)
     {
         //TODO: Implement a more sophisticated method to calculate the zOffset
-        return data.VAngle * VisualizationSettings.Instance.NodeSizeScaleFactor;
+        //return data.VAngle * VisualizationSettings.Instance.NodeHeightScaleFactor;
+        return VisualizationSettings.Instance.NodeHeightScaleFactor; //TODO: PLACEHOLDER
     }
 
     public float CalculateSizeMappingVoltageMagnitude(Node data)
     {
         //TODO: Implement a more sophisticated method to calculate the sizeMapping
-        return data.VMagnitude * 0.02f * VisualizationSettings.Instance.NodeSizeScaleFactor;
+        //return data.VMagnitude * 0.02f * VisualizationSettings.Instance.NodeSizeScaleFactor;
+        
+        return VisualizationSettings.Instance.NodeSizeScaleFactor; //TODO: PLACEHOLDER
     }
 
         public float CalculateSizeMappingVoltageAngle(Node data)
     {
         //TODO: Implement a more sophisticated method to calculate the sizeMapping
-        return data.VAngle * 0.2f* VisualizationSettings.Instance.NodeSizeScaleFactor;
+        //return data.VAngle * 0.2f* VisualizationSettings.Instance.NodeSizeScaleFactor;
+        
+        return VisualizationSettings.Instance.NodeSizeScaleFactor; //TODO: PLACEHOLDER
     }
+
+    */
     
 }
