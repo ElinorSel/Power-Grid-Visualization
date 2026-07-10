@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 public class DataImporter : MonoBehaviour
 {
@@ -66,7 +67,7 @@ public class DataImporter : MonoBehaviour
             //have to change so it's a node object and not just the nodeID for edges
             Node Node1 = nodeLookup[data_values[i][Node1IDIndex]];
             Node Node2 = nodeLookup[data_values[i][Node2IDIndex]];
-            importEdges(data_values[i][edgeIDIndex], bool.Parse(data_values[i][inServiceIndex]), float.Parse(data_values[i][maxLoadIndex]),data_values[i], Node1, Node2);
+            importEdges(data_values[i][edgeIDIndex], bool.Parse(data_values[i][inServiceIndex]), float.Parse(data_values[i][maxLoadIndex]), Node1, Node2);
         }
     }
 
@@ -115,7 +116,7 @@ public class DataImporter : MonoBehaviour
                 string nodeID = data_values[i][NodeIDIndex];
                 Node node = nodeLookup[nodeID];
                 NodeSnapshot dataSnapShot = new NodeSnapshot(float.Parse(data_values[i][powerIndex]), float.Parse(data_values[i][angleIndex]));
-                node.dataSnapshots[TimeSpan.Parse(String.Parse(time))] = dataSnapShot;
+                node.DataSnapshots[TimeSpan.Parse(time.ToString())] = dataSnapShot;
             }
         }
 
@@ -125,7 +126,7 @@ public class DataImporter : MonoBehaviour
     {
         CSVReader csvReader = new CSVReader();
         //looping through time
-        for (time = 0; time = TimeRange; time++)
+        for (int time = 0; time < TimeRange; time++)
         {
             //getting the correct file
             string filename = Path.Combine(fileFolderPath, $"ieee118_{time}_line.csv");
@@ -143,8 +144,8 @@ public class DataImporter : MonoBehaviour
             {
                 string  edgeID = data_values[i][EdgeIDIndex];
                 Edge edge = edgeLookup[edgeID];
-                EdgeSnapShot dataSnapShot = new EdgeSnapShot(float.Parse(data_values[i][loadPercentIndex]), float.Parse(data_values[i][powerFromIndex]), float.Parse(data_values[i][powerToIndex]));
-                edge.data[TimeSpan.Parse(time)] = dataSnapShot;
+                EdgeSnapshot dataSnapShot = new EdgeSnapshot(float.Parse(data_values[i][loadPercentIndex]), float.Parse(data_values[i][powerFromIndex]), float.Parse(data_values[i][powerToIndex]));
+                edge.DataSnapshots[TimeSpan.Parse(time.ToString())] = dataSnapShot;
             }
         }
 
