@@ -48,7 +48,7 @@ public class NodeVisualizer : MonoBehaviour
         transform.localScale = Vector3.one * sizeMapping;
 
         // [Show Labels]
-        if (VisualizationSettings.Instance.ShowLabels) nodeID.text = data.VoltageLevelId;
+        if (VisualizationSettings.Instance.ShowLabels) nodeID.text = data.Id;
         else nodeID.text = "";
     }
 
