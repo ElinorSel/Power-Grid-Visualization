@@ -78,6 +78,6 @@ public class NodeVisualizer : MonoBehaviour
         return VisualizationSettings.Instance.NodeSizeScaleFactor; //TODO: PLACEHOLDER
     }
 
-    */
+    
     
 }
