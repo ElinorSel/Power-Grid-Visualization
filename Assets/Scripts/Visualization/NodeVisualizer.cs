@@ -1,26 +1,35 @@
 using UnityEngine;
 using TMPro;
+using System;
 
 public class NodeVisualizer : MonoBehaviour
 {
-    public Node Data {get; private set;}
+    
     [SerializeField] public TextMeshPro nodeID;
 
+    public Node Node {get; private set;}
+    public NodeSnapshot Snapshot { get; private set; }
+    public TimeSpan Time { get; private set; }
+    public int TimeStepIndex { get; private set; }
     private float sizeMapping = 1f;
 
-    public void Initialize(Node data)
+
+    public void Initialize(Node data, TimeSpan time, int timeStepIndex)
     {
-        /*
-        Data = data;
+        
+        Node = data;
+        Time = time;
+        Snapshot = Node.DataSnapshots[time];
+        TimeStepIndex = timeStepIndex;
 
         // [Height Mapping]
         switch (VisualizationSettings.Instance.NodeHeightMapping)
         {
             case VisualizationSettings.NodeHeightMappingOption.None:
-                data.ZOffset = 0f;
+                Snapshot.ZOffset = 0f + VisualizationSettings.Instance.TimeStepZSize * timeStepIndex;
                 break;
             case VisualizationSettings.NodeHeightMappingOption.VoltageAngle:
-                data.ZOffset = CalculateZOffsetVoltageAngle(data);
+                Snapshot.ZOffset = CalculateZOffsetVoltageAngle() +  VisualizationSettings.Instance.TimeStepZSize  * timeStepIndex;
                 break;
             default:
                 Debug.LogWarning("Unknown / Unimplementedheight mapping option.");
@@ -44,7 +53,7 @@ public class NodeVisualizer : MonoBehaviour
                 break;
         }
 
-        transform.position = new Vector3(data.Coordinates.x, data.ZOffset, data.Coordinates.y);
+        transform.position = new Vector3(Snapshot.Coordinates.x, Snapshot.ZOffset, Snapshot.Coordinates.y); 
         transform.localScale = Vector3.one * sizeMapping;
 
         // [Show Labels]
@@ -52,10 +61,10 @@ public class NodeVisualizer : MonoBehaviour
         else nodeID.text = "";
     
 
-        */
+        
     }
 
-    public float CalculateZOffsetVoltageAngle(Node data)
+    public float CalculateZOffsetVoltageAngle()
     {
         //TODO: Implement a more sophisticated method to calculate the zOffset
         //return data.VAngle * VisualizationSettings.Instance.NodeHeightScaleFactor;

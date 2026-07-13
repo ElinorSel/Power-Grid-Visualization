@@ -416,15 +416,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 170b4b8123e8d344b9cb371198bcffc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VisualizationSettings
-  showLabels: 1
+  showLabels: 0
+  timeStepZSize: 3
   nodeHeightMapping: 0
   nodeHeightScaleFactor: 5
   nodeColorMapping: 0
-  nodeSizeMapping: 2
-  nodeSizeScaleFactor: 2
+  nodeSizeMapping: 0
+  nodeSizeScaleFactor: 0.3
   edgeColorMapping: 0
-  edgeWidthMapping: 1
-  edgeWidthScaleFactor: 2
+  edgeWidthMapping: 0
+  edgeWidthScaleFactor: 1
 --- !u!1001 &1373153106
 PrefabInstance:
   m_ObjectHideFlags: 0

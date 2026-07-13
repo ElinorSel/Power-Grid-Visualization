@@ -42,6 +42,9 @@ public class VisualizationSettings : MonoBehaviour
     [Header("General Settings")]
     [SerializeField]
     private bool showLabels = true;
+    [SerializeField]
+    [Tooltip("How tall each timeStep slice is")]
+     private float timeStepZSize;
 
 
     //------------------------------
@@ -85,6 +88,7 @@ public class VisualizationSettings : MonoBehaviour
     public bool ShowLabels => showLabels;
     public float NodeHeightScaleFactor => nodeHeightScaleFactor;
     public float NodeSizeScaleFactor => nodeSizeScaleFactor;
+    public float TimeStepZSize => timeStepZSize;
     public float EdgeWidthScaleFactor => edgeWidthScaleFactor;
 
 
@@ -131,6 +135,11 @@ public class VisualizationSettings : MonoBehaviour
     public void SetSizeScaleFactor(float scaleFactor)
     {
         nodeSizeScaleFactor = scaleFactor;
+    }
+
+    public void SetTimeStepZSize(float timeStepSize)
+    {
+        timeStepZSize = timeStepSize;
     }
 
     public void SetEdgeColorMapping(EdgeColorMappingOption mapping)

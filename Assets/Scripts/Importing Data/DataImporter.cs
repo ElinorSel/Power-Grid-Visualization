@@ -94,6 +94,7 @@ public class DataImporter : MonoBehaviour
         //looping through time
         for (int time = 0; time < TimeRange; time++)
         {
+            TimeSpan currentTime = TimeSpan.Parse(time.ToString());
             //getting the correct file
             string filename = Path.Combine(fileFolderPath, $"ieee118_hour_{time}_bus.csv");
             List<string[]> data_values = csvReader.ReadCSVFile(filename);
@@ -111,7 +112,7 @@ public class DataImporter : MonoBehaviour
                 Node node = ImportNode(nodeID);
                 
                 NodeSnapshot dataSnapShot = new NodeSnapshot(float.Parse(data_values[i][powerIndex]), float.Parse(data_values[i][angleIndex]));
-                node.DataSnapshots[TimeSpan.Parse(time.ToString())] = dataSnapShot;
+                node.DataSnapshots[currentTime] = dataSnapShot;
             }
         }
 
@@ -123,6 +124,8 @@ public class DataImporter : MonoBehaviour
         //looping through time
         for (int time = 0; time < TimeRange; time++)
         {
+            TimeSpan currentTime = TimeSpan.Parse(time.ToString());
+            Graph.TimeSteps.Add(currentTime); // Save the timestep to the graph object
             //getting the correct file
             string filename = Path.Combine(fileFolderPath, $"ieee118_hour_{time}_line.csv");
             List<string[]> data_values = csvReader.ReadCSVFile(filename);

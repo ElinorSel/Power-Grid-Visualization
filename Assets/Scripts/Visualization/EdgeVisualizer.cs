@@ -1,20 +1,28 @@
 using UnityEngine;
+using System;
 
 public class EdgeVisualizer : MonoBehaviour
 {
-    public Edge Data {get; set;}
+    public Edge Edge {get; set;}
     private Vector3 startPosition;
     private Vector3 endPosition;
+    public EdgeSnapshot Snapshot { get; private set; }
+    public TimeSpan Time { get; private set; }
+    public int TimeStepIndex { get; private set; }
 
     [SerializeField] private float width = 0.5f;
     [SerializeField] private GameObject arrowPrefab;
 
 
-    public void Initialize(Edge data)
-    { /*
-        Data = data;
-        startPosition = new Vector3(data.Node1.Coordinates., data.Node1.ZOffset, data.Node1.Coordinates.y);
-        endPosition = new Vector3(data.Node2.Coordinates.x, data.Node2.ZOffset, data.Node2.Coordinates.y);
+    public void Initialize(Edge data,TimeSpan time, int timeStepIndex)
+    { 
+        Edge = data;
+        Time = time;
+        Snapshot = Edge.DataSnapshots[time];
+        TimeStepIndex = timeStepIndex;
+
+        startPosition = new Vector3(data.Node1.DataSnapshots[time].Coordinates.x, data.Node1.DataSnapshots[time].ZOffset, data.Node1.DataSnapshots[time].Coordinates.y);
+        endPosition = new Vector3(data.Node2.DataSnapshots[time].Coordinates.x, data.Node2.DataSnapshots[time].ZOffset, data.Node2.DataSnapshots[time].Coordinates.y);
 
         // [Width Settings]
         switch (VisualizationSettings.Instance.EdgeWidthMapping)
@@ -23,14 +31,15 @@ public class EdgeVisualizer : MonoBehaviour
                 width = VisualizationSettings.Instance.EdgeWidthScaleFactor; 
                 break;
             case VisualizationSettings.EdgeWidthMappingOption.MVALimit:
-                 width = CalculateWidthMVALimit(data); 
+                //width = CalculateWidthMVALimit(data); //TODO: fix later
+                width = VisualizationSettings.Instance.EdgeWidthScaleFactor; 
                 break;
             default:
                 Debug.LogWarning("Unknown / Unimplemented width mapping option for Edges.");
                 break;
         }
 
-        // [Width Settings]
+        // [Color Settings]
         switch (VisualizationSettings.Instance.EdgeColorMapping)
         {
             case VisualizationSettings.EdgeColorMappingOption.None:
@@ -46,7 +55,7 @@ public class EdgeVisualizer : MonoBehaviour
         //RenderEdge(width);
         //Direction(data);
 
-        */
+        
         
     }
 
