@@ -133,7 +133,7 @@ public class DataImporter : MonoBehaviour
 
             //getting the index of headers in the file
             string[] data_headers = data_values[0];
-            int EdgeIDIndex = Array.IndexOf(data_headers, EdgeIDHeading);
+            int edgeIDIndex = Array.IndexOf(data_headers, EdgeIDHeading);
             int loadPercentIndex = Array.IndexOf(data_headers, EdgeLoadHeading);
             int powerFromIndex = Array.IndexOf(data_headers, EdgePowerFromHeading);
             int powerToIndex = Array.IndexOf(data_headers, EdgePowerToHeading);
@@ -141,7 +141,7 @@ public class DataImporter : MonoBehaviour
             //looping through each line
             for(int i = 1; i < data_values.Count; i++)
             {
-                string  edgeID = data_values[i][EdgeIDIndex];
+                string  edgeID = data_values[i][edgeIDIndex];
                 Edge edge = Edges[edgeID]; //assuming that all edges have been imported in the first step
                 EdgeSnapshot dataSnapShot = new EdgeSnapshot(float.Parse(data_values[i][loadPercentIndex]), float.Parse(data_values[i][powerFromIndex]), float.Parse(data_values[i][powerToIndex]));
                 edge.DataSnapshots[TimeSpan.Parse(time.ToString())] = dataSnapShot;
@@ -152,7 +152,7 @@ public class DataImporter : MonoBehaviour
 
     void DebugDataImport()
     {
-        string timeStep = "1"; //we are only checking the first timestep for now, can be expanded later
+        string timeStep = "10"; //we are only checking the first timestep for now, can be expanded later
         //CONNECTIONS
         Debug.Log("Creating Debugging CSV file for Connections. Data points:" + Edges.Count);
         var csvConnections = new StringBuilder();
