@@ -36,15 +36,15 @@ public class DataImporter : MonoBehaviour
 
 
     //Bool for graphmanager
-    public bool ready = false;
+    public bool Ready {get; set;} = false;
     void Start()
     {
         nodes = new List<Node>();
         edges = new List<Edge>();
         ConnectEdgesToNodes();
-        importHourNodeData();
-        importHourEdgeData();
-        ready = true;
+        ImportHourNodeData();
+        ImportHourEdgeData();
+        Ready = true;
     }
 
         void ConnectEdgesToNodes()
@@ -62,39 +62,35 @@ public class DataImporter : MonoBehaviour
 
         for(int i = 1; i < data_values.Count; i++)
         {
-            importNodes(data_values[i][Node1IDIndex]);
-            importNodes(data_values[i][Node2IDIndex]);
-            //have to change so it's a node object and not just the nodeID for edges
-            Node Node1 = nodeLookup[data_values[i][Node1IDIndex]];
-            Node Node2 = nodeLookup[data_values[i][Node2IDIndex]];
-            importEdges(data_values[i][edgeIDIndex], bool.Parse(data_values[i][inServiceIndex]), float.Parse(data_values[i][maxLoadIndex]), Node1, Node2);
+            Node Node1 = ImportNode(data_values[i][Node1IDIndex]);
+            Node Node2 = ImportNode(data_values[i][Node2IDIndex]);
+            ImportEdge(data_values[i][edgeIDIndex], bool.Parse(data_values[i][inServiceIndex]), float.Parse(data_values[i][maxLoadIndex]), Node1, Node2);
         }
     }
 
-    void importEdges(string ID, bool inService, float maxLoad, Node Node1, Node Node2)
+    void ImportEdge(string ID, bool inService, float maxLoad, Node Node1, Node Node2)
     {
         Edge edge = new Edge(ID, inService, maxLoad, Node1, Node2);
         edgeLookup.Add(ID, edge); //add to dictionary
         edges.Add(edge); //add to list
+        Node1.Edges.Add(edge); // Let Nodes also keep references to all its edges
+        Node2.Edges.Add(edge);
         //edge.DebugPrintData();
-
-        
     }
 
-    void importNodes(string ID)
+    Node ImportNode(string ID)
     {
-        if (!nodeLookup.ContainsKey(ID))
+        if (!nodeLookup.TryGetValue(ID, out Node node))
         {
-            Node node = new Node(ID);
+            node = new Node(ID);
             nodeLookup.Add(ID, node); //add to dictionary
             nodes.Add(node); // add to list
             //node.DebugPrintData();
         }
-        
-        
+        return node;
     }
 
-    void importHourNodeData()
+    void ImportHourNodeData()
     {
         CSVReader csvReader = new CSVReader();
         //looping through time
@@ -122,7 +118,7 @@ public class DataImporter : MonoBehaviour
 
     }
 
-    void importHourEdgeData()
+    void ImportHourEdgeData()
     {
         CSVReader csvReader = new CSVReader();
         //looping through time

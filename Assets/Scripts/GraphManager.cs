@@ -24,7 +24,7 @@ public class GraphManager : MonoBehaviour
 
     void Update()
     {
-        if (dataImporter.ready && !instantiated)
+        if (dataImporter.Ready && !instantiated)
         {
             Debug.Log("DataImporter is ready. Instantiating nodes and edges.");
             edges = dataImporter.edges;
