@@ -31,21 +31,17 @@ public class DataImporter : MonoBehaviour
 
 
     //Dictionaries of nodes and edges 
-    public Dictionary<string, Node> Nodes {get;} = new();
-    public Dictionary<string, Edge> Edges {get;} = new();
-
-    //Bool for graphmanager
-    public bool Ready {get; private set;} = false;
+    public GraphData Graph {get; private set;} = new();
 
 
-
-    void Start()
+    public GraphData ImportData()
     {
+        
         ConnectEdgesToNodes();
         ImportHourNodeData();
         ImportHourEdgeData();
         if(makeDebugFiles)DebugDataImport();
-        Ready = true;
+        return Graph;
     }
 
         void ConnectEdgesToNodes()
@@ -71,23 +67,23 @@ public class DataImporter : MonoBehaviour
 
     void ImportEdge(string ID, bool inService, float maxLoad, Node Node1, Node Node2)
     {
-        if (Edges.ContainsKey(ID))
+        if (Graph.Edges.ContainsKey(ID))
         {
             Debug.LogWarning($"Duplicate edge ID found: {ID}");
             return;
         }
         Edge edge = new Edge(ID, inService, maxLoad, Node1, Node2);
-        Edges.Add(ID, edge); //add to dictionary
+        Graph.Edges.Add(ID, edge); //add to dictionary
         Node1.Edges.Add(edge);
         Node2.Edges.Add(edge);
     }
 
     Node ImportNode(string ID)
     {
-        if (!Nodes.TryGetValue(ID, out Node node))
+        if (!Graph.Nodes.TryGetValue(ID, out Node node))
         {
             node = new Node(ID);
-            Nodes.Add(ID, node); 
+            Graph.Nodes.Add(ID, node); 
         }
         return node;
     }
@@ -142,7 +138,7 @@ public class DataImporter : MonoBehaviour
             for(int i = 1; i < data_values.Count; i++)
             {
                 string  edgeID = data_values[i][edgeIDIndex];
-                Edge edge = Edges[edgeID]; //assuming that all edges have been imported in the first step
+                Edge edge = Graph.Edges[edgeID]; //assuming that all edges have been imported in the first step
                 EdgeSnapshot dataSnapShot = new EdgeSnapshot(float.Parse(data_values[i][loadPercentIndex]), float.Parse(data_values[i][powerFromIndex]), float.Parse(data_values[i][powerToIndex]));
                 edge.DataSnapshots[TimeSpan.Parse(time.ToString())] = dataSnapShot;
             }
@@ -154,11 +150,11 @@ public class DataImporter : MonoBehaviour
     {
         string timeStep = "10"; //we are only checking the first timestep for now, can be expanded later
         //CONNECTIONS
-        Debug.Log("Creating Debugging CSV file for Connections. Data points:" + Edges.Count);
+        Debug.Log("Creating Debugging CSV file for Connections. Data points:" + Graph.Edges.Count);
         var csvConnections = new StringBuilder();
         csvConnections.AppendLine("EdgeID, Node1ID, Node2ID, InService, MaxLoad");
 
-        foreach (Edge edge in Edges.Values){
+        foreach (Edge edge in Graph.Edges.Values){
             var newLine = $"{edge.Id},{edge.Node1.Id},{edge.Node2.Id},{edge.InService},{edge.MaxLoad}";
             csvConnections.AppendLine(newLine); 
         }
@@ -166,11 +162,11 @@ public class DataImporter : MonoBehaviour
 
         
         //EDGES
-        Debug.Log("Creating Debugging CSV file for Edges. Data points:" + Edges.Count + "Time step: " + timeStep);
+        Debug.Log("Creating Debugging CSV file for Edges. Data points:" + Graph.Edges.Count + "Time step: " + timeStep);
         var csvEdges = new StringBuilder();
         csvEdges.AppendLine("EdgeID, PowerFrom, PowerTo, Load");
 
-        foreach (Edge edge in Edges.Values){
+        foreach (Edge edge in Graph.Edges.Values){
             var newLine = $"{edge.Id},{edge.DataSnapshots[TimeSpan.Parse(timeStep)].PowerFrom}, {edge.DataSnapshots[TimeSpan.Parse(timeStep)].PowerTo}, {edge.DataSnapshots[TimeSpan.Parse(timeStep)].Load}";
             csvEdges.AppendLine(newLine); 
         }
@@ -178,11 +174,11 @@ public class DataImporter : MonoBehaviour
         File.WriteAllText("Assets/Data/Debugging/Edges.csv", csvEdges.ToString());
 
         //NODES
-        Debug.Log("Creating Debugging CSV file for Nodes. Data points:" + Nodes.Count + "Time step: " + timeStep);
+        Debug.Log("Creating Debugging CSV file for Nodes. Data points:" + Graph.Nodes.Count + "Time step: " + timeStep);
         var csvNodes = new StringBuilder();
         csvNodes.AppendLine("NodeID, VAngle, Power");
 
-        foreach (Node node in Nodes.Values.OrderBy(n => int.Parse(n.Id))){
+        foreach (Node node in Graph.Nodes.Values.OrderBy(n => int.Parse(n.Id))){
             var newLine = $"{node.Id},{node.DataSnapshots[TimeSpan.Parse(timeStep)].VAngle}, {node.DataSnapshots[TimeSpan.Parse(timeStep)].Power}";
             csvNodes.AppendLine(newLine); 
         }
