@@ -4,8 +4,6 @@ using System.Collections.Generic;
 public class GraphManager : MonoBehaviour
 {
     private DataImporter dataImporter;
-    private List<Edge> edges;
-    private List<Node> nodes;
     [SerializeField] private GameObject edgePrefab;
     [SerializeField] private GameObject nodePrefab;
 
@@ -27,8 +25,6 @@ public class GraphManager : MonoBehaviour
         if (dataImporter.Ready && !instantiated)
         {
             Debug.Log("DataImporter is ready. Instantiating nodes and edges.");
-            edges = dataImporter.edges;
-            nodes = dataImporter.nodes;
             InstantiateNodes();
             InstantiateEdges();
             instantiated = true;
@@ -38,7 +34,7 @@ public class GraphManager : MonoBehaviour
     void InstantiateNodes()
     { 
         GameObject nodeParent = new GameObject("Nodes");
-        foreach (Node node in nodes)
+        foreach (Node node in dataImporter.Nodes.Values)
         {
             GameObject nodeObject = Instantiate(nodePrefab, nodeParent.transform);
             nodeObject.name = "Node_" + node.Id;
@@ -49,7 +45,7 @@ public class GraphManager : MonoBehaviour
     void InstantiateEdges()
     {
         GameObject edgeParent = new GameObject("Edges");
-        foreach (Edge edge in edges)
+        foreach (Edge edge in dataImporter.Edges.Values)
         {
             GameObject edgeObject = Instantiate(edgePrefab, edgeParent.transform); 
             edgeObject.name = "Edge_" + edge.Id;

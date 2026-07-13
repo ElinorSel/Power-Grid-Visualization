@@ -9,11 +9,11 @@ public class EdgeVisualizer : MonoBehaviour
     [SerializeField] private float width = 0.5f;
     [SerializeField] private GameObject arrowPrefab;
 
+
     public void Initialize(Edge data)
-    {
-        /*
+    { /*
         Data = data;
-        startPosition = new Vector3(data.Node1.Coordinates.x, data.Node1.ZOffset, data.Node1.Coordinates.y);
+        startPosition = new Vector3(data.Node1.Coordinates., data.Node1.ZOffset, data.Node1.Coordinates.y);
         endPosition = new Vector3(data.Node2.Coordinates.x, data.Node2.ZOffset, data.Node2.Coordinates.y);
 
         // [Width Settings]
@@ -43,9 +43,11 @@ public class EdgeVisualizer : MonoBehaviour
         }
 
 
-        RenderEdge(width);
-        Direction(data);
+        //RenderEdge(width);
+        //Direction(data);
+
         */
+        
     }
 
     void RenderEdge(float edgeWidth)
@@ -73,11 +75,9 @@ public class EdgeVisualizer : MonoBehaviour
         lineRenderer.SetPosition(0, startPosition);
         lineRenderer.SetPosition(1, endPosition);
     } 
-
-        /*
+/*
     void Direction (Edge edge)
     {
-
         if (edge.Power>0) //flowing from Node1 to Node2
         {
             Vector3 direction = (endPosition - startPosition).normalized;
@@ -99,6 +99,9 @@ public class EdgeVisualizer : MonoBehaviour
         }
 
     }
+    */
+
+    /*
 
     float CalculateWidthMVALimit(Edge edge)
     {

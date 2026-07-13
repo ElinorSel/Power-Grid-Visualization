@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using System.Text;
+using System.Linq;
 
 public class DataImporter : MonoBehaviour
 {
+    [SerializeField] private bool makeDebugFiles = false; //make files to compare with original data to check for errors
     [SerializeField] private int TimeRange = 24; //range of time that we go through, default 24 hours
 
     //filepaths for data
@@ -15,35 +18,33 @@ public class DataImporter : MonoBehaviour
     //Fields for headers to make it more adaptable
     [SerializeField] private string ConnectionsFromHeading;
     [SerializeField] private string ConnectionsToHeading;
-    [SerializeField] private string ConnectionsEdgeIDHeading;
+    [SerializeField] private string ConnectionsEdgeIDHeading = "";
     [SerializeField] private string ConnectionsInServiceHeading;
     [SerializeField] private string ConnectionsMaxLoadHeading;
     [SerializeField] private string NodePowerHeading;
     [SerializeField] private string NodeAngleHeading;
-    [SerializeField] private string NodeIDHeading;
-    [SerializeField] private string EdgeIDHeading;
+    [SerializeField] private string NodeIDHeading = ""; 
+    [SerializeField] private string EdgeIDHeading = "";
     [SerializeField] private string EdgeLoadHeading;
     [SerializeField] private string EdgePowerFromHeading;
     [SerializeField] private string EdgePowerToHeading;
 
-    //List of nodes and edges for iterating
-    public List<Edge> edges {get; set;}
-    public List<Node> nodes {get; set;}
 
-    //Dictionaries of nodes and edges for quick ID lookup
-    public Dictionary<string, Node> nodeLookup = new Dictionary<string, Node>();
-    public Dictionary<string, Edge> edgeLookup = new Dictionary<string, Edge>();
-
+    //Dictionaries of nodes and edges 
+    public Dictionary<string, Node> Nodes {get;} = new();
+    public Dictionary<string, Edge> Edges {get;} = new();
 
     //Bool for graphmanager
-    public bool Ready {get; set;} = false;
+    public bool Ready {get; private set;} = false;
+
+
+
     void Start()
     {
-        nodes = new List<Node>();
-        edges = new List<Edge>();
         ConnectEdgesToNodes();
         ImportHourNodeData();
         ImportHourEdgeData();
+        if(makeDebugFiles)DebugDataImport();
         Ready = true;
     }
 
@@ -54,38 +55,39 @@ public class DataImporter : MonoBehaviour
 
         //Find the index of all the headings to make it adaptable to changes
         string[] data_headers = data_values[0];
-        int Node1IDIndex = Array.IndexOf(data_headers, ConnectionsFromHeading);
-        int Node2IDIndex = Array.IndexOf(data_headers, ConnectionsToHeading);
+        int node1IDIndex = Array.IndexOf(data_headers, ConnectionsFromHeading);
+        int node2IDIndex = Array.IndexOf(data_headers, ConnectionsToHeading);
         int edgeIDIndex = Array.IndexOf(data_headers, ConnectionsEdgeIDHeading);
         int inServiceIndex = Array.IndexOf(data_headers, ConnectionsInServiceHeading);
         int maxLoadIndex = Array.IndexOf(data_headers, ConnectionsMaxLoadHeading);
 
         for(int i = 1; i < data_values.Count; i++)
         {
-            Node Node1 = ImportNode(data_values[i][Node1IDIndex]);
-            Node Node2 = ImportNode(data_values[i][Node2IDIndex]);
+            Node Node1 = ImportNode(data_values[i][node1IDIndex]);
+            Node Node2 = ImportNode(data_values[i][node2IDIndex]);
             ImportEdge(data_values[i][edgeIDIndex], bool.Parse(data_values[i][inServiceIndex]), float.Parse(data_values[i][maxLoadIndex]), Node1, Node2);
         }
     }
 
     void ImportEdge(string ID, bool inService, float maxLoad, Node Node1, Node Node2)
     {
+        if (Edges.ContainsKey(ID))
+        {
+            Debug.LogWarning($"Duplicate edge ID found: {ID}");
+            return;
+        }
         Edge edge = new Edge(ID, inService, maxLoad, Node1, Node2);
-        edgeLookup.Add(ID, edge); //add to dictionary
-        edges.Add(edge); //add to list
-        Node1.Edges.Add(edge); // Let Nodes also keep references to all its edges
+        Edges.Add(ID, edge); //add to dictionary
+        Node1.Edges.Add(edge);
         Node2.Edges.Add(edge);
-        //edge.DebugPrintData();
     }
 
     Node ImportNode(string ID)
     {
-        if (!nodeLookup.TryGetValue(ID, out Node node))
+        if (!Nodes.TryGetValue(ID, out Node node))
         {
             node = new Node(ID);
-            nodeLookup.Add(ID, node); //add to dictionary
-            nodes.Add(node); // add to list
-            //node.DebugPrintData();
+            Nodes.Add(ID, node); 
         }
         return node;
     }
@@ -97,20 +99,21 @@ public class DataImporter : MonoBehaviour
         for (int time = 0; time < TimeRange; time++)
         {
             //getting the correct file
-            string filename = Path.Combine(fileFolderPath, $"ieee118_{time}_bus.csv");
+            string filename = Path.Combine(fileFolderPath, $"ieee118_hour_{time}_bus.csv");
             List<string[]> data_values = csvReader.ReadCSVFile(filename);
 
             //getting the index of headers in the file
             string[] data_headers = data_values[0];
-            int NodeIDIndex = Array.IndexOf(data_headers, NodeIDHeading);
+            int nodeIDIndex = Array.IndexOf(data_headers, NodeIDHeading);
             int angleIndex = Array.IndexOf(data_headers, NodeAngleHeading);
             int powerIndex = Array.IndexOf(data_headers, NodePowerHeading);
 
             //looping through each line
             for(int i = 1; i < data_values.Count; i++)
             {
-                string nodeID = data_values[i][NodeIDIndex];
-                Node node = nodeLookup[nodeID];
+                string nodeID = data_values[i][nodeIDIndex];
+                Node node = ImportNode(nodeID);
+                
                 NodeSnapshot dataSnapShot = new NodeSnapshot(float.Parse(data_values[i][powerIndex]), float.Parse(data_values[i][angleIndex]));
                 node.DataSnapshots[TimeSpan.Parse(time.ToString())] = dataSnapShot;
             }
@@ -125,7 +128,7 @@ public class DataImporter : MonoBehaviour
         for (int time = 0; time < TimeRange; time++)
         {
             //getting the correct file
-            string filename = Path.Combine(fileFolderPath, $"ieee118_{time}_line.csv");
+            string filename = Path.Combine(fileFolderPath, $"ieee118_hour_{time}_line.csv");
             List<string[]> data_values = csvReader.ReadCSVFile(filename);
 
             //getting the index of headers in the file
@@ -139,12 +142,52 @@ public class DataImporter : MonoBehaviour
             for(int i = 1; i < data_values.Count; i++)
             {
                 string  edgeID = data_values[i][EdgeIDIndex];
-                Edge edge = edgeLookup[edgeID];
+                Edge edge = Edges[edgeID]; //assuming that all edges have been imported in the first step
                 EdgeSnapshot dataSnapShot = new EdgeSnapshot(float.Parse(data_values[i][loadPercentIndex]), float.Parse(data_values[i][powerFromIndex]), float.Parse(data_values[i][powerToIndex]));
                 edge.DataSnapshots[TimeSpan.Parse(time.ToString())] = dataSnapShot;
             }
         }
 
+    }
+
+    void DebugDataImport()
+    {
+        string timeStep = "1"; //we are only checking the first timestep for now, can be expanded later
+        //CONNECTIONS
+        Debug.Log("Creating Debugging CSV file for Connections. Data points:" + Edges.Count);
+        var csvConnections = new StringBuilder();
+        csvConnections.AppendLine("EdgeID, Node1ID, Node2ID, InService, MaxLoad");
+
+        foreach (Edge edge in Edges.Values){
+            var newLine = $"{edge.Id},{edge.Node1.Id},{edge.Node2.Id},{edge.InService},{edge.MaxLoad}";
+            csvConnections.AppendLine(newLine); 
+        }
+        File.WriteAllText("Assets/Data/Debugging/Connections.csv", csvConnections.ToString());
+
+        
+        //EDGES
+        Debug.Log("Creating Debugging CSV file for Edges. Data points:" + Edges.Count + "Time step: " + timeStep);
+        var csvEdges = new StringBuilder();
+        csvEdges.AppendLine("EdgeID, PowerFrom, PowerTo, Load");
+
+        foreach (Edge edge in Edges.Values){
+            var newLine = $"{edge.Id},{edge.DataSnapshots[TimeSpan.Parse(timeStep)].PowerFrom}, {edge.DataSnapshots[TimeSpan.Parse(timeStep)].PowerTo}, {edge.DataSnapshots[TimeSpan.Parse(timeStep)].Load}";
+            csvEdges.AppendLine(newLine); 
+        }
+        
+        File.WriteAllText("Assets/Data/Debugging/Edges.csv", csvEdges.ToString());
+
+        //NODES
+        Debug.Log("Creating Debugging CSV file for Nodes. Data points:" + Nodes.Count + "Time step: " + timeStep);
+        var csvNodes = new StringBuilder();
+        csvNodes.AppendLine("NodeID, VAngle, Power");
+
+        foreach (Node node in Nodes.Values.OrderBy(n => int.Parse(n.Id))){
+            var newLine = $"{node.Id},{node.DataSnapshots[TimeSpan.Parse(timeStep)].VAngle}, {node.DataSnapshots[TimeSpan.Parse(timeStep)].Power}";
+            csvNodes.AppendLine(newLine); 
+        }
+        
+        File.WriteAllText("Assets/Data/Debugging/Nodes.csv", csvNodes.ToString());
     }
 
 }

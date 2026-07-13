@@ -314,7 +314,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3420277170275869662, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5771767427320974144, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
       propertyPath: m_Enabled
@@ -323,7 +323,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1836398480566308131, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
 --- !u!1 &585109292
 GameObject:
@@ -371,9 +374,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfa766d02f7f3a74997abf532912bb67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataImporter
+  makeDebugFiles: 1
   TimeRange: 24
-  filePathConnections: Assets/Data/iee118_lines.csv
-  fileFolderPath: Assets/Data/csv_output
+  filePathConnections: Assets\Data\iee118_lines.csv
+  fileFolderPath: Assets\Data\csv_output
   ConnectionsFromHeading: from_bus
   ConnectionsToHeading: to_bus
   ConnectionsEdgeIDHeading: 
@@ -386,7 +390,6 @@ MonoBehaviour:
   EdgeLoadHeading: loading_percent
   EdgePowerFromHeading: p_from_mw
   EdgePowerToHeading: p_to_mw
-  ready: 0
 --- !u!114 &585109296
 MonoBehaviour:
   m_ObjectHideFlags: 0
