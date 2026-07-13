@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class GraphManager : MonoBehaviour
 {
@@ -24,30 +25,40 @@ public class GraphManager : MonoBehaviour
 
     void InstantiateGraph()
     {
-        Debug.Log("Instantiating nodes and edges.");
-        InstantiateNodes();
-        InstantiateEdges();
-    }
+        GameObject visualization = new GameObject("Visualization");
+        for (int currentTimeStep = 0; currentTimeStep < graph.TimeSteps.Count; currentTimeStep++)
+        {    
+            GameObject graphParent = new GameObject($"Hour_{currentTimeStep}");
+            graphParent.transform.SetParent(visualization.transform);
 
-    void InstantiateNodes()
-    { 
-        GameObject nodeParent = new GameObject("Nodes");
-        foreach (Node node in graph.Nodes.Values)
-        {
-            GameObject nodeObject = Instantiate(nodePrefab, nodeParent.transform);
-            nodeObject.name = "Node_" + node.Id;
-            nodeObject.GetComponent<NodeVisualizer>().Initialize(node);
+            Debug.Log("Instantiating nodes and edges.");
+            InstantiateNodes(graphParent, graph.TimeSteps[currentTimeStep],currentTimeStep);
+            InstantiateEdges(graphParent, graph.TimeSteps[currentTimeStep],currentTimeStep);
         }
     }
 
-    void InstantiateEdges()
+    void InstantiateNodes(GameObject graphParent, TimeSpan timeStep, int index)
+    { 
+        GameObject nodeParent = new GameObject("Nodes");
+        nodeParent.transform.SetParent(graphParent.transform);
+
+        foreach (Node node in graph.Nodes.Values)
+        {
+            GameObject nodeObject = Instantiate(nodePrefab, nodeParent.transform);
+            nodeObject.name = "Node_" + node.Id + "_" + timeStep;
+            nodeObject.GetComponent<NodeVisualizer>().Initialize(node, timeStep, index);
+        }
+    }
+
+    void InstantiateEdges(GameObject graphParent, TimeSpan timeStep, int index) //TODO: fix so it takes timespan into account 
     {
         GameObject edgeParent = new GameObject("Edges");
+        edgeParent.transform.SetParent(graphParent.transform);
         foreach (Edge edge in graph.Edges.Values)
         {
             GameObject edgeObject = Instantiate(edgePrefab, edgeParent.transform); 
             edgeObject.name = "Edge_" + edge.Id;
-            edgeObject.GetComponent<EdgeVisualizer>().Initialize(edge);
+            edgeObject.GetComponent<EdgeVisualizer>().Initialize(edge, timeStep, index);
         }
     }
 }
