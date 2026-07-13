@@ -7,7 +7,7 @@ public class GraphManager : MonoBehaviour
     [SerializeField] private GameObject edgePrefab;
     [SerializeField] private GameObject nodePrefab;
 
-    private bool instantiated = false;
+    private GraphData graph;
 
     void Start()
     {
@@ -17,24 +17,22 @@ public class GraphManager : MonoBehaviour
             Debug.LogError("DataImporter component not found on the GameObject.");
             return;
         }
+        graph = dataImporter.ImportData();
+        InstantiateGraph();
 
     }
 
-    void Update()
+    void InstantiateGraph()
     {
-        if (dataImporter.Ready && !instantiated)
-        {
-            Debug.Log("DataImporter is ready. Instantiating nodes and edges.");
-            InstantiateNodes();
-            InstantiateEdges();
-            instantiated = true;
-        }
+        Debug.Log("Instantiating nodes and edges.");
+        InstantiateNodes();
+        InstantiateEdges();
     }
 
     void InstantiateNodes()
     { 
         GameObject nodeParent = new GameObject("Nodes");
-        foreach (Node node in dataImporter.Nodes.Values)
+        foreach (Node node in graph.Nodes.Values)
         {
             GameObject nodeObject = Instantiate(nodePrefab, nodeParent.transform);
             nodeObject.name = "Node_" + node.Id;
@@ -45,7 +43,7 @@ public class GraphManager : MonoBehaviour
     void InstantiateEdges()
     {
         GameObject edgeParent = new GameObject("Edges");
-        foreach (Edge edge in dataImporter.Edges.Values)
+        foreach (Edge edge in graph.Edges.Values)
         {
             GameObject edgeObject = Instantiate(edgePrefab, edgeParent.transform); 
             edgeObject.name = "Edge_" + edge.Id;
