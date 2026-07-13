@@ -24,12 +24,11 @@ public class Edge
         this.DataSnapshots = new Dictionary<TimeSpan, EdgeSnapshot>();
     }
 
-/*
+
     public void DebugPrintData()
     {
-        Debug.Log("Edge ID: " + Id + ", Edge Type: " + type + ", Voltage Level 1 ID: " + VoltageLevel1Id + "Is Connected 1: " + isConnected1 + ", Voltage Level 2 ID: " + VoltageLevel2Id + ", Is Connected 2: " + isConnected2 + ", Power: " + Power + ", Reactive Power: " + ReactivePower + ", Current: " + current + ", Normal MVA Limit: " + NormalMVALimit);
-
+        Debug.Log($"Edge ID: {Id}, InService: {InService}, MaxLoad: {MaxLoad}, Node1 ID: {Node1.Id}, Node2 ID: {Node2.Id}");
     }
 
-    */
+
 }

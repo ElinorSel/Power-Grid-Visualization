@@ -371,8 +371,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfa766d02f7f3a74997abf532912bb67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataImporter
-  filePathEdges: Assets/Data/data_starter_kit/consolidated_lines.csv
-  filePathNodes: Assets/Data/data_starter_kit/consolidated_nodes.csv
+  TimeRange: 24
+  filePathConnections: Assets/Data/iee118_lines.csv
+  fileFolderPath: Assets/Data/csv_output
+  ConnectionsFromHeading: from_bus
+  ConnectionsToHeading: to_bus
+  ConnectionsEdgeIDHeading: 
+  ConnectionsInServiceHeading: in_service
+  ConnectionsMaxLoadHeading: max_loading_percent
+  NodePowerHeading: p_mw
+  NodeAngleHeading: va_degree
+  NodeIDHeading: 
+  EdgeIDHeading: 
+  EdgeLoadHeading: loading_percent
+  EdgePowerFromHeading: p_from_mw
+  EdgePowerToHeading: p_to_mw
   ready: 0
 --- !u!114 &585109296
 MonoBehaviour:
