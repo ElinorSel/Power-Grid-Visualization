@@ -21,8 +21,8 @@ public class EdgeVisualizer : MonoBehaviour
         Snapshot = Edge.DataSnapshots[time];
         TimeStepIndex = timeStepIndex;
 
-        startPosition = new Vector3(data.Node1.DataSnapshots[time].Coordinates.x, data.Node1.DataSnapshots[time].ZOffset, data.Node1.DataSnapshots[time].Coordinates.y);
-        endPosition = new Vector3(data.Node2.DataSnapshots[time].Coordinates.x, data.Node2.DataSnapshots[time].ZOffset, data.Node2.DataSnapshots[time].Coordinates.y);
+        startPosition = new Vector3(Edge.Node1.DataSnapshots[time].Coordinates.x, Edge.Node1.DataSnapshots[time].ZOffset, Edge.Node1.DataSnapshots[time].Coordinates.y);
+        endPosition = new Vector3(Edge.Node2.DataSnapshots[time].Coordinates.x, Edge.Node2.DataSnapshots[time].ZOffset, Edge.Node2.DataSnapshots[time].Coordinates.y);
 
         // [Width Settings]
         switch (VisualizationSettings.Instance.EdgeWidthMapping)
@@ -52,8 +52,9 @@ public class EdgeVisualizer : MonoBehaviour
         }
 
 
-        //RenderEdge(width);
-        //Direction(data);
+        RenderEdge(width);
+        CalculateWidthMVALimit(); //TODO: will we have other mappings to width?
+        Direction();
 
         
         
@@ -84,41 +85,43 @@ public class EdgeVisualizer : MonoBehaviour
         lineRenderer.SetPosition(0, startPosition);
         lineRenderer.SetPosition(1, endPosition);
     } 
-/*
-    void Direction (Edge edge)
+
+
+
+    void Direction ()
     {
-        if (edge.Power>0) //flowing from Node1 to Node2
+        //TODO: idk if the direction is correct
+        if (Edge.DataSnapshots[Time].Direction>0) //flowing from Node1 to Node2
         {
             Vector3 direction = (endPosition - startPosition).normalized;
-            GameObject arrow = Instantiate(arrowPrefab, endPosition - direction * 12f, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
+            GameObject arrow = Instantiate(arrowPrefab, endPosition - direction * 2f, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
             arrow.transform.localScale = new Vector3 (2*width, 2*width, 2*width);
-            arrow.name = "Arrow_" + edge.Id;
+            arrow.name = "Arrow_" + Edge.Id;
         }
-        else if (edge.Power<0) //flowing from Node2 to Node1
+        else if (Edge.DataSnapshots[Time].Direction<0) //flowing from Node2 to Node1
         {
             Vector3 direction = (startPosition - endPosition).normalized;
-            GameObject arrow = Instantiate(arrowPrefab, startPosition - direction * 12f, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
+            GameObject arrow = Instantiate(arrowPrefab, startPosition - direction * 2f, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
             arrow.transform.localScale = new Vector3 (2*width, 2*width, 2*width);
-            arrow.name = "Arrow_" + edge.Id;
+            arrow.name = "Arrow_" + Edge.Id;
         }
         else
         {
             // No power flow, do not instantiate an arrow
             // If there is no flow we could change the color of the line
+            Debug.LogWarning("No power flow in Edge_" + Edge.Id);
         }
 
     }
-    */
+    
 
-    /*
-
-    float CalculateWidthMVALimit(Edge edge)
+  
+    float CalculateWidthMVALimit()
     {
-        //return (edge.NormalMVALimit / 100f) * VisualizationSettings.Instance.EdgeWidthScaleFactor; // Scale factor can be adjusted as needed
-        float value = edge.NormalMVALimit / 100f;
+        //TODO: change to suitable value
+        float value = Edge.MaxLoad / 120f;
         return Mathf.Pow(value, 1.3f) * VisualizationSettings.Instance.EdgeWidthScaleFactor;
     }
 
-    */
     
 }

@@ -256,78 +256,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &534254734
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 528130265964893379, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 528130265964893379, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 528130265964893379, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 528130265964893379, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 528130265964893379, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 528130265964893379, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 528130265964893379, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 528130265964893379, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 528130265964893379, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 528130265964893379, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3009627956052578073, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3420277170275869662, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_Name
-      value: Node
-      objectReference: {fileID: 0}
-    - target: {fileID: 3420277170275869662, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5771767427320974144, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1836398480566308131, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-  m_SourcePrefab: {fileID: 100100000, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
 --- !u!1 &585109292
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,8 +302,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfa766d02f7f3a74997abf532912bb67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataImporter
-  makeDebugFiles: 1
-  TimeRange: 24
+  makeDebugFiles: 0
+  TimeRange: 1
   filePathConnections: Assets\Data\iee118_lines.csv
   fileFolderPath: Assets\Data\csv_output
   ConnectionsFromHeading: from_bus
@@ -417,15 +345,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VisualizationSettings
   showLabels: 0
-  timeStepZSize: 3
-  nodeHeightMapping: 0
-  nodeHeightScaleFactor: 5
+  timeStepZSize: 2
+  nodeHeightMapping: 1
+  nodeHeightScaleFactor: 0.05
   nodeColorMapping: 0
   nodeSizeMapping: 0
   nodeSizeScaleFactor: 0.3
   edgeColorMapping: 0
   edgeWidthMapping: 0
-  edgeWidthScaleFactor: 1
+  edgeWidthScaleFactor: 0.08
 --- !u!1001 &1373153106
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1182,4 +1110,3 @@ SceneRoots:
   - {fileID: 585109294}
   - {fileID: 80520252}
   - {fileID: 2096288725}
-  - {fileID: 534254734}

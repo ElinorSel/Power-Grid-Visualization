@@ -32,6 +32,7 @@ public class GraphManager : MonoBehaviour
             graphParent.transform.SetParent(visualization.transform);
 
             Debug.Log("Instantiating nodes and edges.");
+            // OBS for now, nodes MUST be instanciated before edges, as edges use the node positions. 
             InstantiateNodes(graphParent, graph.TimeSteps[currentTimeStep],currentTimeStep);
             InstantiateEdges(graphParent, graph.TimeSteps[currentTimeStep],currentTimeStep);
         }
