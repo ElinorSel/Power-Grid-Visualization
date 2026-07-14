@@ -26,10 +26,10 @@ public class NodeVisualizer : MonoBehaviour
         switch (VisualizationSettings.Instance.NodeHeightMapping)
         {
             case VisualizationSettings.NodeHeightMappingOption.None:
-                Snapshot.ZOffset = 0f + VisualizationSettings.Instance.TimeStepZSize * timeStepIndex;
+                Snapshot.ZOffset = 0f + VisualizationSettings.Instance.TimeStepZSize * TimeStepIndex;
                 break;
             case VisualizationSettings.NodeHeightMappingOption.VoltageAngle:
-                Snapshot.ZOffset = CalculateZOffsetVoltageAngle() +  VisualizationSettings.Instance.TimeStepZSize  * timeStepIndex;
+                Snapshot.ZOffset = CalculateZOffsetVoltageAngle() +  VisualizationSettings.Instance.TimeStepZSize  * TimeStepIndex;
                 break;
             default:
                 Debug.LogWarning("Unknown / Unimplementedheight mapping option.");
@@ -43,10 +43,10 @@ public class NodeVisualizer : MonoBehaviour
                 sizeMapping = VisualizationSettings.Instance.NodeSizeScaleFactor;
                 break;
             case VisualizationSettings.NodeSizeMappingOption.VoltageMagnitude:
-                sizeMapping = CalculateSizeMappingVoltageMagnitude(data);
+                sizeMapping = CalculateSizeMappingVoltageMagnitude();
                 break;
             case VisualizationSettings.NodeSizeMappingOption.VoltageAngle:
-                sizeMapping = CalculateSizeMappingVoltageAngle(data);
+                sizeMapping = CalculateSizeMappingVoltageAngle();
                 break;
             default:
                 Debug.LogWarning("Unknown / Unimplemented size mapping option.");
@@ -57,7 +57,7 @@ public class NodeVisualizer : MonoBehaviour
         transform.localScale = Vector3.one * sizeMapping;
 
         // [Show Labels]
-        if (VisualizationSettings.Instance.ShowLabels) nodeID.text = data.Id;
+        if (VisualizationSettings.Instance.ShowLabels) nodeID.text = Node.Id;
         else nodeID.text = "";
     
 
@@ -67,24 +67,19 @@ public class NodeVisualizer : MonoBehaviour
     public float CalculateZOffsetVoltageAngle()
     {
         //TODO: Implement a more sophisticated method to calculate the zOffset
-        //return data.VAngle * VisualizationSettings.Instance.NodeHeightScaleFactor;
-        return VisualizationSettings.Instance.NodeHeightScaleFactor; //TODO: PLACEHOLDER
+        return Node.DataSnapshots[Time].VAngle * VisualizationSettings.Instance.NodeHeightScaleFactor;
     }
 
-    public float CalculateSizeMappingVoltageMagnitude(Node data)
+    public float CalculateSizeMappingVoltageMagnitude()
     {
         //TODO: Implement a more sophisticated method to calculate the sizeMapping
-        //return data.VMagnitude * 0.02f * VisualizationSettings.Instance.NodeSizeScaleFactor;
-        
-        return VisualizationSettings.Instance.NodeSizeScaleFactor; //TODO: PLACEHOLDER
+        return Node.DataSnapshots[Time].Power * 0.01f * VisualizationSettings.Instance.NodeSizeScaleFactor;
     }
 
-        public float CalculateSizeMappingVoltageAngle(Node data)
+        public float CalculateSizeMappingVoltageAngle()
     {
         //TODO: Implement a more sophisticated method to calculate the sizeMapping
-        //return data.VAngle * 0.2f* VisualizationSettings.Instance.NodeSizeScaleFactor;
-        
-        return VisualizationSettings.Instance.NodeSizeScaleFactor; //TODO: PLACEHOLDER
+        return Node.DataSnapshots[Time].VAngle * 0.01f * VisualizationSettings.Instance.NodeSizeScaleFactor;
     }
 
     

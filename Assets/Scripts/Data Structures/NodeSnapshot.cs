@@ -13,6 +13,6 @@ public class NodeSnapshot
         this.Power = power;
         this.VAngle = vAngle;
         this.ZOffset = 0f; 
-        this.Coordinates = new Vector2(UnityEngine.Random.Range(-10f,10f), UnityEngine.Random.Range(-10f,10f));
+        this.Coordinates = new Vector2(UnityEngine.Random.Range(-10f,10f), UnityEngine.Random.Range(-20f,20f));
     }
 }
