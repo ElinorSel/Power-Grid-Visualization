@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Collections;
+using Unity.Android.Gradle.Manifest;
 
 public class GraphManager : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class GraphManager : MonoBehaviour
     [SerializeField] private Material edgeMaterial;
 
     private GraphData graphData ;
-    private GraphLayout layout= new();
+    private GraphLayout layout;
     private GraphStyle style = new();
 
     void Start()
@@ -22,9 +23,26 @@ public class GraphManager : MonoBehaviour
             Debug.LogError("DataImporter component not found on the GameObject.");
             return;
         }
+        
         graphData = dataImporter.ImportData();
+        layout = new(SetLayout());
+        layout.Initialize(graphData);
         StartCoroutine(InstantiateGraph());
 
+    }
+
+    private INodeLayoutAlgorithm SetLayout()
+    {
+        switch (VisualizationSettings.Instance.NodeLayoutAlgorithm)
+        {
+            case VisualizationSettings.NodeLayoutAlgorithOption.InitialData:
+                return new InitialData();  
+            case VisualizationSettings.NodeLayoutAlgorithOption.ForceDirected:
+                 return new ForceDirected();
+            default:
+                Debug.LogWarning("Unknown / Unimplementedheight algorithm option for Node Layout. Using initial data instead.");
+                return new InitialData(); 
+        }
     }
 
     IEnumerator InstantiateGraph()

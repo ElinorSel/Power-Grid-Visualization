@@ -11,6 +11,12 @@ public class VisualizationSettings : MonoBehaviour
         //VoltageMagnitude,
     }
 
+    public enum NodeLayoutAlgorithOption
+    {
+        InitialData,
+        ForceDirected, //TODO: rename to alg name if needed
+    }
+
 
     public enum NodeColorMappingOption //TODO: if needed
     {
@@ -46,6 +52,11 @@ public class VisualizationSettings : MonoBehaviour
     [Tooltip("How tall each timeStep slice is")]
      private float timeStepZSize;
 
+    [SerializeField]
+    [Tooltip("Which Algorithm used to calculate node positions")]
+    private NodeLayoutAlgorithOption nodeLayoutAlgorithm;
+
+
 
     //------------------------------
     [Header("Node Mapping")]
@@ -80,6 +91,8 @@ public class VisualizationSettings : MonoBehaviour
 
 
 //------------------------------ GET METHODS ------------------------------
+    public NodeLayoutAlgorithOption NodeLayoutAlgorithm => nodeLayoutAlgorithm;
+
     public NodeHeightMappingOption NodeHeightMapping => nodeHeightMapping;
     public NodeColorMappingOption NodeColorMapping => nodeColorMapping;
     public NodeSizeMappingOption NodeSizeMapping => nodeSizeMapping;
@@ -107,6 +120,11 @@ public class VisualizationSettings : MonoBehaviour
 
 
 //------------------------------ SET METHODS ------------------------------
+    public void SetNodeLayoutAlgorithm(  NodeLayoutAlgorithOption algoritm)
+    {
+        nodeLayoutAlgorithm = algoritm;
+    }
+
     public void SetHeightMapping(NodeHeightMappingOption mapping)
     {
         nodeHeightMapping = mapping;
