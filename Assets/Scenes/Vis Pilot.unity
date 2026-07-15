@@ -137,7 +137,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &80520249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -302,8 +302,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfa766d02f7f3a74997abf532912bb67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataImporter
-  makeDebugFiles: 1
-  TimeRange: 1
+  makeDebugFiles: 0
+  TimeRange: 10
   filePathConnections: Assets\Data\iee118_lines.csv
   fileFolderPath: Assets\Data\csv_output
   ConnectionsFromHeading: from_bus
@@ -332,7 +332,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GraphManager
   edgePrefab: {fileID: 3879456599183557431, guid: 90e304724caa8574b848f50e791c83c2, type: 3}
   nodePrefab: {fileID: 3420277170275869662, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-  edgeMaterial: {fileID: 0}
+  edgeMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!114 &585109297
 MonoBehaviour:
   m_ObjectHideFlags: 0

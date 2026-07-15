@@ -29,7 +29,7 @@ public class EdgeVisualizer : MonoBehaviour
 
         startPosition = layout.GetInitialNodePosition(Edge.Node1.DataSnapshots[time], timeStepIndex);
         endPosition = layout.GetInitialNodePosition(Edge.Node2.DataSnapshots[time], timeStepIndex);
-        //RenderEdge(style.GetEdgeWidth(Edge, time), edgeMaterial);
+        RenderEdge(style.GetEdgeWidth(Edge, time), edgeMaterial);
         //Direction();  
         
     }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Collections;
 
 public class GraphManager : MonoBehaviour
 {
@@ -22,11 +23,11 @@ public class GraphManager : MonoBehaviour
             return;
         }
         graphData = dataImporter.ImportData();
-        InstantiateGraph();
+        StartCoroutine(InstantiateGraph());
 
     }
 
-    void InstantiateGraph()
+    IEnumerator InstantiateGraph()
     {
         GameObject visualization = new GameObject("Visualization");
         for (int currentTimeStep = 0; currentTimeStep < graphData.TimeSteps.Count; currentTimeStep++)
@@ -36,33 +37,43 @@ public class GraphManager : MonoBehaviour
 
             Debug.Log("Instantiating nodes and edges.");
             // OBS for now, nodes MUST be instanciated before edges, as edges use the node positions. 
-            InstantiateNodes(graphParent, graphData.TimeSteps[currentTimeStep],currentTimeStep);
-            //InstantiateEdges(graphParent, graphData.TimeSteps[currentTimeStep],currentTimeStep);
+            yield return StartCoroutine(InstantiateNodes(graphParent, graphData.TimeSteps[currentTimeStep],currentTimeStep));
+            yield return StartCoroutine(InstantiateEdges(graphParent, graphData.TimeSteps[currentTimeStep],currentTimeStep));
+            // wait one frame before creating the next timestep
+             yield return null;
         }
+        Debug.Log("Finished instantiating graph");
     }
 
-    void InstantiateNodes(GameObject graphParent, TimeSpan timeStep, int index)
+    IEnumerator InstantiateNodes(GameObject graphParent, TimeSpan timeStep, int index)
     { 
         GameObject nodeParent = new GameObject("Nodes");
         nodeParent.transform.SetParent(graphParent.transform);
-
+        int count = 0;
         foreach (Node node in graphData.Nodes.Values)
         {
             GameObject nodeObject = Instantiate(nodePrefab, nodeParent.transform);
             nodeObject.name = "Node_" + node.Id + "_" + timeStep;
             nodeObject.GetComponent<NodeVisualizer>().Initialize(node, timeStep, index, layout, style);
+            count++;
+            if (count % 20 == 0)yield return null; //Pause 1 frame every 20 nodes
         }
     }
 
-    void InstantiateEdges(GameObject graphParent, TimeSpan timeStep, int index) //TODO: fix so it takes timespan into account 
+    IEnumerator InstantiateEdges(GameObject graphParent, TimeSpan timeStep, int index) //TODO: fix so it takes timespan into account 
     {
         GameObject edgeParent = new GameObject("Edges");
         edgeParent.transform.SetParent(graphParent.transform);
+        int count = 0;
+
         foreach (Edge edge in graphData.Edges.Values)
         {
             GameObject edgeObject = Instantiate(edgePrefab, edgeParent.transform); 
             edgeObject.name = "Edge_" + edge.Id;
             edgeObject.GetComponent<EdgeVisualizer>().Initialize(edge, timeStep, index,  layout, style, edgeMaterial);
+            count++;
+            if (count % 20 == 0)yield return null; //Pause 1 frame every 20 edges
+
         }
     }
 }
