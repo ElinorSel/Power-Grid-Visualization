@@ -151,7 +151,7 @@ public class DataImporter : MonoBehaviour
 
     void DebugDataImport()
     {
-        string timeStep = "10"; //we are only checking the first timestep for now, can be expanded later
+        string timeStep = "0"; //we are only checking the first timestep for now, can be expanded later
         //CONNECTIONS
         Debug.Log("Creating Debugging CSV file for Connections. Data points:" + Graph.Edges.Count);
         var csvConnections = new StringBuilder();

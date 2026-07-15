@@ -13,54 +13,28 @@ public class EdgeVisualizer : MonoBehaviour
     [SerializeField] private float width = 0.5f;
     [SerializeField] private GameObject arrowPrefab;
 
+    private GraphLayout _layout;
+    private GraphStyle _style; 
 
-    public void Initialize(Edge data,TimeSpan time, int timeStepIndex)
+
+    public void Initialize(Edge data,TimeSpan time, int timeStepIndex, GraphLayout layout, GraphStyle style, Material edgeMaterial)
     { 
         Edge = data;
         Time = time;
-        Snapshot = Edge.DataSnapshots[time];
+        
+        _layout = layout;
+        _style = style; 
+        
         TimeStepIndex = timeStepIndex;
 
-        startPosition = new Vector3(Edge.Node1.DataSnapshots[time].Coordinates.x, Edge.Node1.DataSnapshots[time].ZOffset, Edge.Node1.DataSnapshots[time].Coordinates.y);
-        endPosition = new Vector3(Edge.Node2.DataSnapshots[time].Coordinates.x, Edge.Node2.DataSnapshots[time].ZOffset, Edge.Node2.DataSnapshots[time].Coordinates.y);
-
-        // [Width Settings]
-        switch (VisualizationSettings.Instance.EdgeWidthMapping)
-        {
-            case VisualizationSettings.EdgeWidthMappingOption.None:
-                width = VisualizationSettings.Instance.EdgeWidthScaleFactor; 
-                break;
-            case VisualizationSettings.EdgeWidthMappingOption.MVALimit:
-                //width = CalculateWidthMVALimit(data); //TODO: fix later
-                width = VisualizationSettings.Instance.EdgeWidthScaleFactor; 
-                break;
-            default:
-                Debug.LogWarning("Unknown / Unimplemented width mapping option for Edges.");
-                break;
-        }
-
-        // [Color Settings]
-        switch (VisualizationSettings.Instance.EdgeColorMapping)
-        {
-            case VisualizationSettings.EdgeColorMappingOption.None:
-                break;
-            case VisualizationSettings.EdgeColorMappingOption.Load:
-                break;
-            default:
-                Debug.LogWarning("Unknown / Unimplemented color mapping option for Edges.");
-                break;
-        }
-
-
-        RenderEdge(width);
-        CalculateWidthMVALimit(); //TODO: will we have other mappings to width?
-        Direction();
-
-        
+        startPosition = layout.GetInitialNodePosition(Edge.Node1.DataSnapshots[time], timeStepIndex);
+        endPosition = layout.GetInitialNodePosition(Edge.Node2.DataSnapshots[time], timeStepIndex);
+        //RenderEdge(style.GetEdgeWidth(Edge, time), edgeMaterial);
+        //Direction();  
         
     }
 
-    void RenderEdge(float edgeWidth)
+    void RenderEdge(float edgeWidth, Material edgeMaterial)
     {
         // Add a LineRenderer component
         LineRenderer lineRenderer = gameObject.AddComponent<LineRenderer>();
@@ -68,7 +42,7 @@ public class EdgeVisualizer : MonoBehaviour
         lineRenderer.useWorldSpace = true;
 
         // Set the material
-        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.material = edgeMaterial;
 
         // Set the color
         lineRenderer.startColor = Color.green;
@@ -115,13 +89,6 @@ public class EdgeVisualizer : MonoBehaviour
     }
     
 
-  
-    float CalculateWidthMVALimit()
-    {
-        //TODO: change to suitable value
-        float value = Edge.MaxLoad / 120f;
-        return Mathf.Pow(value, 1.3f) * VisualizationSettings.Instance.EdgeWidthScaleFactor;
-    }
 
     
 }
