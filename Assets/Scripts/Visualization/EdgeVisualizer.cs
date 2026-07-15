@@ -27,10 +27,10 @@ public class EdgeVisualizer : MonoBehaviour
         
         TimeStepIndex = timeStepIndex;
 
-        startPosition = layout.GetInitialNodePosition(Edge.Node1.DataSnapshots[time], timeStepIndex);
-        endPosition = layout.GetInitialNodePosition(Edge.Node2.DataSnapshots[time], timeStepIndex);
+        startPosition = layout.GetNodePosition(Edge.Node1.Id, time);
+        endPosition = layout.GetNodePosition(Edge.Node2.Id, time);
         RenderEdge(style.GetEdgeWidth(Edge, time), edgeMaterial);
-        //Direction();  
+        //Direction();  TODO: add back again once fixxed
         
     }
 

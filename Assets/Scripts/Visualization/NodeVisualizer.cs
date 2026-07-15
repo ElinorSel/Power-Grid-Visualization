@@ -16,7 +16,7 @@ public class NodeVisualizer : MonoBehaviour
     private GraphStyle _style;   
 
 
-    //reads the style and layout and renders the node / edge
+    //reads the style and layout data, and then renders the node / edge from this data
     public void Initialize(Node data, TimeSpan time, int timeStepIndex, GraphLayout layout, GraphStyle style)
     {
         
@@ -28,7 +28,7 @@ public class NodeVisualizer : MonoBehaviour
         Snapshot = Node.DataSnapshots[time];
         TimeStepIndex = timeStepIndex;
 
-        transform.position = layout.GetInitialNodePosition(Snapshot, timeStepIndex);   
+        transform.position = layout.GetNodePosition(data.Id, time);   
         transform.localScale = Vector3.one * _style.GetNodeSize(data, time);
 
         // [Show Labels]

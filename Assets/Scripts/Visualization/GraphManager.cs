@@ -24,9 +24,14 @@ public class GraphManager : MonoBehaviour
             return;
         }
         
+        //save nodes and edges to graph data
         graphData = dataImporter.ImportData();
-        layout = new(SetLayout());
-        layout.Initialize(graphData);
+        //layout will handle where nodes are positioned. Create a new layout using the current viz settings
+
+        //Fill the layout with the initial graph data (saves the start positions of nodes and edges)
+        layout.Initialize(SetLayout(), graphData);
+
+        //create the Node and edges GameObjects, 
         StartCoroutine(InstantiateGraph());
 
     }
@@ -36,12 +41,13 @@ public class GraphManager : MonoBehaviour
         switch (VisualizationSettings.Instance.NodeLayoutAlgorithm)
         {
             case VisualizationSettings.NodeLayoutAlgorithOption.InitialData:
-                return new InitialData();  
+                return new InitalDataLayout();  
             case VisualizationSettings.NodeLayoutAlgorithOption.ForceDirected:
-                 return new ForceDirected();
+                 //return new ForceDirected(); TODO:
+                 return new InitalDataLayout(); 
             default:
                 Debug.LogWarning("Unknown / Unimplementedheight algorithm option for Node Layout. Using initial data instead.");
-                return new InitialData(); 
+                return new InitalDataLayout(); 
         }
     }
 
@@ -54,7 +60,6 @@ public class GraphManager : MonoBehaviour
             graphParent.transform.SetParent(visualization.transform);
 
             Debug.Log("Instantiating nodes and edges.");
-            // OBS for now, nodes MUST be instanciated before edges, as edges use the node positions. 
             yield return StartCoroutine(InstantiateNodes(graphParent, graphData.TimeSteps[currentTimeStep],currentTimeStep));
             yield return StartCoroutine(InstantiateEdges(graphParent, graphData.TimeSteps[currentTimeStep],currentTimeStep));
             // wait one frame before creating the next timestep

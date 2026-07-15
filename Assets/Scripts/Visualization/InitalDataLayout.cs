@@ -2,19 +2,16 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Numerics;
+using Unity.GraphToolkit.Editor;
 
 
 
 public class InitalDataLayout : INodeLayoutAlgorithm
 {
 
-    //This class places the nodes at the positions of the inital cordinates given in the dataset
-    //if no inital data is provided, the positions will be randomized. 
-
-
-
 
     //Fills the nodePositions dictionary In graphLayout with the initial data
+    //Updates the nodePositions based on the graphData and viz settings
     //NOTE: in the nodeSnapshot class, currently it chooses randomly. TODO: make this conditional only if no data exists.
   public Dictionary<(string, TimeSpan), UnityEngine.Vector3> CalculateInitialPositions(GraphData graph)
     {
@@ -25,24 +22,36 @@ public class InitalDataLayout : INodeLayoutAlgorithm
             TimeSpan timeStep = graph.TimeSteps[currentTimeStep];
             foreach (Node node in graph.Nodes.Values)
             {
-                UnityEngine.Vector3 position = CalculatePosition( node.DataSnapshots[timeStep], currentTimeStep);
+                positions[(node.Id, timeStep)] = CalculatePosition( node.DataSnapshots[timeStep], currentTimeStep);
             }
         }
 
         return positions;
     }
 
-    public Dictionary<(string, TimeSpan), UnityEngine.Vector3> UpdatePositions()
+
+    public void UpdatePositions(GraphData graph, Dictionary<(string, TimeSpan), UnityEngine.Vector3> positions) //Need a reference to nodes dictionary from graphManager?
     {
-        Dictionary<(string, TimeSpan), UnityEngine.Vector3> newPositions = new();
-        //TODO: only update the height (this only changes based on settings)
-        return newPositions;
+        for (int timeStepIndex = 0; timeStepIndex < graph.TimeSteps.Count; timeStepIndex++)
+        {
+            TimeSpan time = graph.TimeSteps[timeStepIndex];
+
+            foreach (Node node in graph.Nodes.Values)
+            {
+                NodeSnapshot snapshot = node.DataSnapshots[time];
+                UnityEngine.Vector3 pos = positions[(node.Id, time)];
+                float graphOffset = VisualizationSettings.Instance.TimeStepZSize * timeStepIndex;
+                pos.y = GetNodeHeight(snapshot);
+                positions[(node.Id, time)] = pos;
+            }
+        }
     }
 
 
      private UnityEngine.Vector3 CalculatePosition(NodeSnapshot snapshot, int timestep)
     {
-        float height = GetNodeHeight(snapshot, timestep);
+        float graphOffset = VisualizationSettings.Instance.TimeStepZSize * timestep;
+        float height = graphOffset + GetNodeHeight(snapshot);
 
         return new UnityEngine.Vector3(
             snapshot.Coordinates.x,
@@ -53,15 +62,15 @@ public class InitalDataLayout : INodeLayoutAlgorithm
 
 
 //TODO: calculate nodeheight in a different class to reduce code repitition?
-        private float GetNodeHeight(NodeSnapshot nodeSnapshot, int timeStepIndex)
+        private float GetNodeHeight(NodeSnapshot nodeSnapshot)
     {
         // [Height Mapping]
         switch (VisualizationSettings.Instance.NodeHeightMapping)
         {
             case VisualizationSettings.NodeHeightMappingOption.None:
-                return  VisualizationSettings.Instance.TimeStepZSize * timeStepIndex;
+                return  1f;
             case VisualizationSettings.NodeHeightMappingOption.VoltageAngle:
-                 return CalculateZOffsetVoltageAngle(nodeSnapshot) +  VisualizationSettings.Instance.TimeStepZSize  * timeStepIndex;
+                 return CalculateZOffsetVoltageAngle(nodeSnapshot);
             default:
                 Debug.LogWarning("Unknown / Unimplementedheight mapping option for Node Height Offset.");
                 return 0f;

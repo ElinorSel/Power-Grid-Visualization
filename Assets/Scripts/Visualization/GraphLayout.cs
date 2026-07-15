@@ -9,22 +9,25 @@ using Unity.Android.Gradle.Manifest;
 //  and the visualisers can then read the data from here
 public class GraphLayout
 {
-     public Dictionary<(string nodeId, TimeSpan time), Vector3> NodePositions = new(); //TODO: move to alg which need live updates. 
+    private Dictionary<TimeSpan, int> timeStepLookup;
+    private GraphData graph;
+    public Dictionary<(string nodeId, TimeSpan time), Vector3> NodePositions = new(); //TODO: move to alg which need live updates. 
 
     private INodeLayoutAlgorithm layoutAlgorithm;
-   
 
-    public GraphLayout(INodeLayoutAlgorithm layoutAlgorithm)
-    {
-        this.layoutAlgorithm = layoutAlgorithm;
-    }
-        public Vector3 GetNodePosition(string nodeId, TimeSpan time)
+    public Vector3 GetNodePosition(string nodeId, TimeSpan time)
     {
         return NodePositions[(nodeId, time)];
     }
 
-    public void Initialize(GraphData graphData)
+    public void Initialize(INodeLayoutAlgorithm layoutAlgorithm, GraphData graphData)
     {
+        this.layoutAlgorithm = layoutAlgorithm;
+        this.graph = graphData;
+        for (int i = 0; i < graph.TimeSteps.Count; i++)
+        {
+            timeStepLookup[graph.TimeSteps[i]] = i;
+        }
         NodePositions = layoutAlgorithm.CalculateInitialPositions(graphData);
     }
     
@@ -34,9 +37,8 @@ public class GraphLayout
         layoutAlgorithm = algorithm;
     }
 
-
-
-
-
-
+    public void UpdateLayout()
+    {
+        layoutAlgorithm.UpdatePositions(graph, NodePositions);
+    }
 }
