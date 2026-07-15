@@ -303,7 +303,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataImporter
   makeDebugFiles: 0
-  TimeRange: 10
+  TimeRange: 1
   filePathConnections: Assets\Data\iee118_lines.csv
   fileFolderPath: Assets\Data\csv_output
   ConnectionsFromHeading: from_bus
@@ -347,6 +347,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VisualizationSettings
   showLabels: 0
   timeStepZSize: 2
+  nodeLayoutAlgorithm: 0
   nodeHeightMapping: 1
   nodeHeightScaleFactor: 0.05
   nodeColorMapping: 0

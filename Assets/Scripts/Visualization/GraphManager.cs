@@ -11,8 +11,8 @@ public class GraphManager : MonoBehaviour
     [SerializeField] private GameObject nodePrefab;
     [SerializeField] private Material edgeMaterial;
 
-    private GraphData graphData ;
-    private GraphLayout layout;
+    private GraphData graphData;
+    private GraphLayout layout = new();
     private GraphStyle style = new();
 
     void Start()
