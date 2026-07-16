@@ -161,4 +161,12 @@ public class GraphManager : MonoBehaviour
         _layout.UpdateLayout();
         RefreshLayoutVisualizers();
     }
+
+    private void HandleLabelSettingsChanged()
+    {
+        foreach(var node in _nodeVisualizers)
+        {
+            node.RefreshLabel();
+        }
+    }
 }

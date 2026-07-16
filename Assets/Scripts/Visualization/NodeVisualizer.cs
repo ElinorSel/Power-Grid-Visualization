@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class NodeVisualizer : MonoBehaviour
 {
     
-    [SerializeField] public TextMeshPro nodeID;
+    [SerializeField] public GameObject nodeIDLabelGO;
+    [SerializeField] private TextMeshPro nodeIDLabel;
 
     public Node Node {get; private set;}
     public NodeSnapshot Snapshot { get; private set; }
@@ -22,19 +23,20 @@ public class NodeVisualizer : MonoBehaviour
         
         Node = data;
         Time = time;
-        //TODO: this can be removed^? We only need id and timespan to find positions.
-
+  
         _layout = layout;
         _style = style; 
 
-        Snapshot = Node.DataSnapshots[time];
-        TimeStepIndex = timeStepIndex;
+        Snapshot = Node.DataSnapshots[time]; //TODO: can be removed
+        TimeStepIndex = timeStepIndex; //TODO: can be removed
 
         transform.position = layout.GetNodePosition(data.Id, time);   
         transform.localScale = Vector3.one * _style.GetNodeSize(data, time);
 
         // [Show Labels]
-        if (VisualizationSettings.Instance.ShowLabels) nodeID.text = Node.Id;
+        nodeIDLabel.text = Node.Id;
+        nodeIDLabelGO.SetActive(VisualizationSettings.Instance.ShowLabels);
+
     }
 
     public void RefreshPosition()
@@ -45,5 +47,10 @@ public class NodeVisualizer : MonoBehaviour
     public void RefreshStyling()
     {
         transform.localScale = Vector3.one * _style.GetNodeSize(Node, Time);
+    }
+    
+    public void RefreshLabel()
+    {
+        nodeIDLabelGO.SetActive(VisualizationSettings.Instance.ShowLabels);
     }
 }
