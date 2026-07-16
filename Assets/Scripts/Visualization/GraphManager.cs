@@ -11,10 +11,40 @@ public class GraphManager : MonoBehaviour
     [SerializeField] private GameObject nodePrefab;
     [SerializeField] private Material edgeMaterial;
 
-    private GraphData graphData;
-    private GraphLayout layout = new();
-    private GraphStyle style = new();
+    private GraphData _graphData;
+    private GraphLayout _layout = new();
+    private GraphStyle _style = new();
 
+    private readonly List<NodeVisualizer> _nodeVisualizers = new();
+    private readonly List<EdgeVisualizer> _edgeVisualizers = new();
+
+    private void OnEnable() {
+        VisualizationSettings.Instance.OnLayoutChanged += HandleLayoutChanged;
+        VisualizationSettings.Instance.OnLayoutAlgorithmChanged += HandleLayoutAlgorithmChanged;
+        VisualizationSettings.Instance.OnLabelSettingsChanged += HandleLabelSettingsChanged;
+        VisualizationSettings.Instance.OnNodeSizeChanged += HandleNodeSizeChanged;
+        VisualizationSettings.Instance.OnNodeColorChanged += HandleNodeColorChanged;
+        VisualizationSettings.Instance.OnEdgeWidthChanged += HandleEdgeWidthChanged;
+        VisualizationSettings.Instance.OnEdgeColorChanged += HandleEdgeColorChanged;
+    }
+    private void OnDisable()
+    {
+        if (VisualizationSettings.Instance == null)
+            return;
+
+        VisualizationSettings.Instance.OnLayoutChanged -= HandleLayoutChanged;
+        VisualizationSettings.Instance.OnLayoutAlgorithmChanged -= HandleLayoutAlgorithmChanged;
+        VisualizationSettings.Instance.OnLabelSettingsChanged -= HandleLabelSettingsChanged;
+        VisualizationSettings.Instance.OnNodeSizeChanged -= HandleNodeSizeChanged;
+        VisualizationSettings.Instance.OnNodeColorChanged -= HandleNodeColorChanged;
+        VisualizationSettings.Instance.OnEdgeWidthChanged -= HandleEdgeWidthChanged;
+        VisualizationSettings.Instance.OnEdgeColorChanged -= HandleEdgeColorChanged;
+    }
+
+    public void OnDisable()
+    {
+        
+    }
     void Start()
     {
         dataImporter = GetComponent<DataImporter>();
@@ -25,18 +55,18 @@ public class GraphManager : MonoBehaviour
         }
         
         //save nodes and edges to graph data
-        graphData = dataImporter.ImportData();
+        _graphData = dataImporter.ImportData();
         //layout will handle where nodes are positioned. Create a new layout using the current viz settings
 
         //Fill the layout with the initial graph data (saves the start positions of nodes and edges)
-        layout.Initialize(SetLayout(), graphData);
+        _layout.Initialize(CreateLayoutAlgorithm(), _graphData);
 
         //create the Node and edges GameObjects, 
         StartCoroutine(InstantiateGraph());
 
     }
 
-    private INodeLayoutAlgorithm SetLayout()
+    private INodeLayoutAlgorithm CreateLayoutAlgorithm()
     {
         switch (VisualizationSettings.Instance.NodeLayoutAlgorithm)
         {
@@ -54,14 +84,14 @@ public class GraphManager : MonoBehaviour
     IEnumerator InstantiateGraph()
     {
         GameObject visualization = new GameObject("Visualization");
-        for (int currentTimeStep = 0; currentTimeStep < graphData.TimeSteps.Count; currentTimeStep++)
+        for (int currentTimeStep = 0; currentTimeStep < _graphData.TimeSteps.Count; currentTimeStep++)
         {    
             GameObject graphParent = new GameObject($"Hour_{currentTimeStep}");
             graphParent.transform.SetParent(visualization.transform);
 
             Debug.Log("Instantiating nodes and edges.");
-            yield return StartCoroutine(InstantiateNodes(graphParent, graphData.TimeSteps[currentTimeStep],currentTimeStep));
-            yield return StartCoroutine(InstantiateEdges(graphParent, graphData.TimeSteps[currentTimeStep],currentTimeStep));
+            yield return StartCoroutine(InstantiateNodes(graphParent, _graphData.TimeSteps[currentTimeStep],currentTimeStep));
+            yield return StartCoroutine(InstantiateEdges(graphParent, _graphData.TimeSteps[currentTimeStep],currentTimeStep));
             // wait one frame before creating the next timestep
              yield return null;
         }
@@ -73,11 +103,13 @@ public class GraphManager : MonoBehaviour
         GameObject nodeParent = new GameObject("Nodes");
         nodeParent.transform.SetParent(graphParent.transform);
         int count = 0;
-        foreach (Node node in graphData.Nodes.Values)
+        foreach (Node node in _graphData.Nodes.Values)
         {
             GameObject nodeObject = Instantiate(nodePrefab, nodeParent.transform);
             nodeObject.name = "Node_" + node.Id + "_" + timeStep;
-            nodeObject.GetComponent<NodeVisualizer>().Initialize(node, timeStep, index, layout, style);
+            NodeVisualizer visualizer = nodeObject.GetComponent<NodeVisualizer>();
+            visualizer.Initialize(node, timeStep, index, _layout, _style);
+            _nodeVisualizers.Add(visualizer);
             count++;
             if (count % 20 == 0)yield return null; //Pause 1 frame every 20 nodes
         }
@@ -89,14 +121,44 @@ public class GraphManager : MonoBehaviour
         edgeParent.transform.SetParent(graphParent.transform);
         int count = 0;
 
-        foreach (Edge edge in graphData.Edges.Values)
+        foreach (Edge edge in _graphData.Edges.Values)
         {
             GameObject edgeObject = Instantiate(edgePrefab, edgeParent.transform); 
             edgeObject.name = "Edge_" + edge.Id;
-            edgeObject.GetComponent<EdgeVisualizer>().Initialize(edge, timeStep, index,  layout, style, edgeMaterial);
+
+            EdgeVisualizer visualizer = edgeObject.GetComponent<EdgeVisualizer>();
+            visualizer.Initialize(edge, timeStep, index,  _layout, _style, edgeMaterial);
+            _edgeVisualizers.Add(visualizer);
             count++;
             if (count % 20 == 0)yield return null; //Pause 1 frame every 20 edges
 
         }
+    }
+
+    public void RefreshLayoutVisualizers()
+    {
+        foreach(var node in _nodeVisualizers)
+        {
+            node.RefreshPosition();
+        }
+
+        foreach(var edge in _edgeVisualizers)
+        {
+            edge.RefreshPosition();
+        }
+    }
+
+    //=============Event Handlers==========================
+
+    private void HandleLayoutChanged()
+    {
+        _layout.UpdateLayout();
+        RefreshLayoutVisualizers();
+    }
+        private void HandleLayoutAlgorithmChanged()
+    {
+        _layout.SetAlgorithm(CreateLayoutAlgorithm());
+        _layout.UpdateLayout();
+        RefreshLayoutVisualizers();
     }
 }

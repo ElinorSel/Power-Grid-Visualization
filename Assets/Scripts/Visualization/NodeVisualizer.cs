@@ -22,6 +22,8 @@ public class NodeVisualizer : MonoBehaviour
         
         Node = data;
         Time = time;
+        //TODO: this can be removed^? We only need id and timespan to find positions.
+
         _layout = layout;
         _style = style; 
 
@@ -33,5 +35,15 @@ public class NodeVisualizer : MonoBehaviour
 
         // [Show Labels]
         if (VisualizationSettings.Instance.ShowLabels) nodeID.text = Node.Id;
+    }
+
+    public void RefreshPosition()
+    {
+        transform.position = _layout.GetNodePosition(Node.Id, Time);
+    }
+
+    public void RefreshStyling()
+    {
+        transform.localScale = Vector3.one * _style.GetNodeSize(Node, Time);
     }
 }

@@ -10,6 +10,8 @@ public class EdgeVisualizer : MonoBehaviour
     public TimeSpan Time { get; private set; }
     public int TimeStepIndex { get; private set; }
 
+    private LineRenderer lineRenderer;
+
     [SerializeField] private float width = 0.5f;
     [SerializeField] private GameObject arrowPrefab;
 
@@ -37,7 +39,7 @@ public class EdgeVisualizer : MonoBehaviour
     void RenderEdge(float edgeWidth, Material edgeMaterial)
     {
         // Add a LineRenderer component
-        LineRenderer lineRenderer = gameObject.AddComponent<LineRenderer>();
+        lineRenderer = gameObject.AddComponent<LineRenderer>();
 
         lineRenderer.useWorldSpace = true;
 
@@ -59,6 +61,21 @@ public class EdgeVisualizer : MonoBehaviour
         lineRenderer.SetPosition(0, startPosition);
         lineRenderer.SetPosition(1, endPosition);
     } 
+
+    public void RefreshPosition()
+    {
+        startPosition = _layout.GetNodePosition(Edge.Node1.Id, Time);
+        endPosition = _layout.GetNodePosition(Edge.Node2.Id, Time);
+        lineRenderer.SetPosition(0, startPosition);
+        lineRenderer.SetPosition(1, endPosition);
+    }
+
+    public void RefreshStyling()
+    {
+        float width = _style.GetEdgeWidth(Edge, Time);
+        lineRenderer.startWidth  = width;
+        lineRenderer.endWidth = width;
+    }
 
 
 

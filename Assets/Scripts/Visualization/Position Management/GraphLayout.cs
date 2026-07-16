@@ -10,8 +10,8 @@ using Unity.Android.Gradle.Manifest;
 public class GraphLayout
 {
     private Dictionary<TimeSpan, int> timeStepLookup = new();
-    private GraphData graph = new();
-    public Dictionary<(string nodeId, TimeSpan time), Vector3> NodePositions = new(); //TODO: move to alg which need live updates. 
+    private GraphData graph;
+    public Dictionary<(string nodeId, TimeSpan time), Vector3> NodePositions {get; private set;}= new(); //TODO: move to alg which need live updates. 
 
     private INodeLayoutAlgorithm layoutAlgorithm;
 
