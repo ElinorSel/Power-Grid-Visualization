@@ -70,11 +70,15 @@ public class EdgeVisualizer : MonoBehaviour
         lineRenderer.SetPosition(1, endPosition);
     }
 
-    public void RefreshStyling()
+    public void RefreshWidth()
     {
         float width = _style.GetEdgeWidth(Edge, Time);
         lineRenderer.startWidth  = width;
         lineRenderer.endWidth = width;
+    }
+    public void RefreshColor()
+    {
+        //TODO: not implented yet
     }
 
 

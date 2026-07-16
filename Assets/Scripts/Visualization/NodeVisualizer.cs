@@ -44,7 +44,7 @@ public class NodeVisualizer : MonoBehaviour
         transform.position = _layout.GetNodePosition(Node.Id, Time);
     }
 
-    public void RefreshStyling()
+    public void RefreshNodeSize()
     {
         transform.localScale = Vector3.one * _style.GetNodeSize(Node, Time);
     }
@@ -53,4 +53,9 @@ public class NodeVisualizer : MonoBehaviour
     {
         nodeIDLabelGO.SetActive(VisualizationSettings.Instance.ShowLabels);
     }
+    public void RefreshNodeColor()
+    {
+        //TODO: not implemented yet
+    }
+    
 }

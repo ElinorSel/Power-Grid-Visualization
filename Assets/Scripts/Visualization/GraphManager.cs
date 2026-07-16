@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Collections;
-using Unity.Android.Gradle.Manifest;
 
 public class GraphManager : MonoBehaviour
 {
@@ -29,8 +28,7 @@ public class GraphManager : MonoBehaviour
     }
     private void OnDisable()
     {
-        if (VisualizationSettings.Instance == null)
-            return;
+        if (VisualizationSettings.Instance == null)return;
 
         VisualizationSettings.Instance.OnLayoutChanged -= HandleLayoutChanged;
         VisualizationSettings.Instance.OnLayoutAlgorithmChanged -= HandleLayoutAlgorithmChanged;
@@ -41,10 +39,6 @@ public class GraphManager : MonoBehaviour
         VisualizationSettings.Instance.OnEdgeColorChanged -= HandleEdgeColorChanged;
     }
 
-    public void OnDisable()
-    {
-        
-    }
     void Start()
     {
         dataImporter = GetComponent<DataImporter>();
@@ -167,6 +161,35 @@ public class GraphManager : MonoBehaviour
         foreach(var node in _nodeVisualizers)
         {
             node.RefreshLabel();
+        }
+    }
+
+    private void HandleNodeSizeChanged()
+    {
+        foreach(var node in _nodeVisualizers)
+        {
+            node.RefreshNodeSize();
+        }
+    }
+    private void HandleNodeColorChanged()
+    {
+        foreach(var node in _nodeVisualizers)
+        {
+            node.RefreshNodeColor();
+        }
+    }
+    private void HandleEdgeWidthChanged()
+    {
+        foreach(var edge in _edgeVisualizers)
+        {
+            edge.RefreshWidth();
+        }
+    }
+    private void HandleEdgeColorChanged()
+    {
+        foreach(var edge in _edgeVisualizers)
+        {
+            edge.RefreshWidth();
         }
     }
 }
