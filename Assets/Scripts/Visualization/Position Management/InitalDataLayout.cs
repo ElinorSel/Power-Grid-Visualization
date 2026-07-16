@@ -13,7 +13,7 @@ public class InitalDataLayout : INodeLayoutAlgorithm
     //Fills the nodePositions dictionary In graphLayout with the initial data
     //Updates the nodePositions based on the graphData and viz settings
     //NOTE: in the nodeSnapshot class, currently it chooses randomly. TODO: make this conditional only if no data exists.
-  public Dictionary<(string, TimeSpan), UnityEngine.Vector3> CalculateInitialPositions(GraphData graph)
+  public Dictionary<(string, TimeSpan), UnityEngine.Vector3> CalculateInitialPositions(GraphData graph) //TODO: refactor to avoid code duplication, both the update positios and calulate initoial positions are basically the same, and use the same helper funcitons
     {
         Dictionary<(string, TimeSpan), UnityEngine.Vector3> positions = new();
 
@@ -32,6 +32,7 @@ public class InitalDataLayout : INodeLayoutAlgorithm
 
     public void UpdatePositions(GraphData graph, Dictionary<(string, TimeSpan), UnityEngine.Vector3> positions) //Need a reference to nodes dictionary from graphManager?
     {
+         Debug.Log("layout Algorithm: updating layout..." );
         for (int timeStepIndex = 0; timeStepIndex < graph.TimeSteps.Count; timeStepIndex++)
         {
             TimeSpan time = graph.TimeSteps[timeStepIndex];
@@ -41,7 +42,7 @@ public class InitalDataLayout : INodeLayoutAlgorithm
                 NodeSnapshot snapshot = node.DataSnapshots[time];
                 UnityEngine.Vector3 pos = positions[(node.Id, time)];
                 float graphOffset = VisualizationSettings.Instance.TimeStepZSize * timeStepIndex;
-                pos.y = GetNodeHeight(snapshot);
+                pos.y = graphOffset + GetNodeHeight(snapshot) * VisualizationSettings.Instance.NodeHeightScaleFactor;
                 positions[(node.Id, time)] = pos;
             }
         }
@@ -51,7 +52,7 @@ public class InitalDataLayout : INodeLayoutAlgorithm
      private UnityEngine.Vector3 CalculatePosition(NodeSnapshot snapshot, int timestep)
     {
         float graphOffset = VisualizationSettings.Instance.TimeStepZSize * timestep;
-        float height = graphOffset + GetNodeHeight(snapshot);
+        float height = graphOffset + (GetNodeHeight(snapshot) * VisualizationSettings.Instance.NodeHeightScaleFactor);
 
         return new UnityEngine.Vector3(
             snapshot.Coordinates.x,
@@ -81,7 +82,7 @@ public class InitalDataLayout : INodeLayoutAlgorithm
         private float CalculateZOffsetVoltageAngle(NodeSnapshot nodeSnapshot)
     {
         //TODO: Implement a more sophisticated method to calculate the zOffset
-        return nodeSnapshot.VAngle * VisualizationSettings.Instance.NodeHeightScaleFactor;
+        return nodeSnapshot.VAngle;
     }
     
 }

@@ -307,4 +307,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25d78cd9a89d7fa489d740065a836dcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NodeVisualizer
-  nodeID: {fileID: 2056768344170136327}
+  nodeIDLabelGO: {fileID: 1836398480566308131}
+  nodeIDLabel: {fileID: 2056768344170136327}

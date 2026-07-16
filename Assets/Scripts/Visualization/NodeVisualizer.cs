@@ -34,7 +34,7 @@ public class NodeVisualizer : MonoBehaviour
         transform.localScale = Vector3.one * _style.GetNodeSize(data, time);
 
         // [Show Labels]
-        nodeIDLabel.text = Node.Id;
+        nodeIDLabel.text = "Node_" + Node.Id;
         nodeIDLabelGO.SetActive(VisualizationSettings.Instance.ShowLabels);
 
     }
@@ -51,6 +51,7 @@ public class NodeVisualizer : MonoBehaviour
     
     public void RefreshLabel()
     {
+        Debug.Log("Node visualiser: Setting labels to " + VisualizationSettings.Instance.ShowLabels);
         nodeIDLabelGO.SetActive(VisualizationSettings.Instance.ShowLabels);
     }
     public void RefreshNodeColor()

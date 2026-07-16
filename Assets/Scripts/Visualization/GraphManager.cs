@@ -17,7 +17,12 @@ public class GraphManager : MonoBehaviour
     private readonly List<NodeVisualizer> _nodeVisualizers = new();
     private readonly List<EdgeVisualizer> _edgeVisualizers = new();
 
-    private void OnEnable() {
+    private void SubscribeToSettingsEvents() {
+        if (VisualizationSettings.Instance == null)
+        {
+            Debug.LogError("VisualizationSettings instance missing!");
+            return;
+        }
         VisualizationSettings.Instance.OnLayoutChanged += HandleLayoutChanged;
         VisualizationSettings.Instance.OnLayoutAlgorithmChanged += HandleLayoutAlgorithmChanged;
         VisualizationSettings.Instance.OnLabelSettingsChanged += HandleLabelSettingsChanged;
@@ -25,8 +30,9 @@ public class GraphManager : MonoBehaviour
         VisualizationSettings.Instance.OnNodeColorChanged += HandleNodeColorChanged;
         VisualizationSettings.Instance.OnEdgeWidthChanged += HandleEdgeWidthChanged;
         VisualizationSettings.Instance.OnEdgeColorChanged += HandleEdgeColorChanged;
+        Debug.Log("Subscribed to label event");
     }
-    private void OnDisable()
+    private void OnDistroy()
     {
         if (VisualizationSettings.Instance == null)return;
 
@@ -41,6 +47,7 @@ public class GraphManager : MonoBehaviour
 
     void Start()
     {
+        SubscribeToSettingsEvents();
         dataImporter = GetComponent<DataImporter>();
         if (dataImporter == null)
         {
@@ -146,7 +153,9 @@ public class GraphManager : MonoBehaviour
 
     private void HandleLayoutChanged()
     {
+        Debug.Log("Graph Manager: updating layout..." );
         _layout.UpdateLayout();
+         Debug.Log("Graph Manager: refreshing visualiszers..." );
         RefreshLayoutVisualizers();
     }
         private void HandleLayoutAlgorithmChanged()
@@ -158,6 +167,7 @@ public class GraphManager : MonoBehaviour
 
     private void HandleLabelSettingsChanged()
     {
+        Debug.Log("Graph manager: listened to event. Refreshing labels");
         foreach(var node in _nodeVisualizers)
         {
             node.RefreshLabel();
@@ -189,7 +199,7 @@ public class GraphManager : MonoBehaviour
     {
         foreach(var edge in _edgeVisualizers)
         {
-            edge.RefreshWidth();
+            edge.RefreshColor();
         }
     }
 }

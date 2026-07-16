@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEditor.ShaderGraph.Internal;
 
 public class VisualizationSettings : MonoBehaviour
 {
@@ -158,7 +159,11 @@ public class VisualizationSettings : MonoBehaviour
 
     public void SetShowLabels(bool show)
     {
-        if(showLabels == show) return;
+        if(showLabels == show) {
+        Debug.Log("VIZ settings: value is the same as before, returning...");
+         return;}
+
+        
         showLabels = show;
         OnLabelSettingsChanged?.Invoke();
     }
@@ -167,6 +172,7 @@ public class VisualizationSettings : MonoBehaviour
     {
         if (nodeHeightScaleFactor == scaleFactor) return;
         nodeHeightScaleFactor = scaleFactor;
+        Debug.Log("VIZ settings: setting heightscale tp" + scaleFactor + ". Invoking Onlabelsettingschanged." );
         OnLayoutChanged?.Invoke();
     }
 
@@ -184,6 +190,12 @@ public class VisualizationSettings : MonoBehaviour
         timeStepZSize = timeStepSize;
         OnLayoutChanged?.Invoke();
     }
+    public void SetEdgeWidthScaleFactor(float value)
+    {
+        if(edgeWidthScaleFactor == value) return;
+        edgeWidthScaleFactor = value;
+        OnEdgeWidthChanged?.Invoke();
+    }
 
     public void SetEdgeColorMapping(EdgeColorMappingOption mapping)
     {
@@ -196,6 +208,7 @@ public class VisualizationSettings : MonoBehaviour
     {
         if(edgeWidthMapping == mapping) return;
         edgeWidthMapping = mapping;
-        OnEdgeWidthChanged?.Invoke();
+        OnEdgeWidthChanged?.Invoke(); //TODO: this handler needs to be changed in the viz manager to work more like the layout alogorithm change
     }
+
 }
