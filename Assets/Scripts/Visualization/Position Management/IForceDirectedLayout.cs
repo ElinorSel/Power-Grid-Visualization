@@ -1,87 +1,195 @@
 using UnityEngine;
-using System.Collections.Generic;
 using System;
-using UnityEngine.UIElements;
-using Unity.GraphToolkit.Editor;
-using UnityEngine.PlayerLoop;
-public class IForceDirectedLayout
+using System.Collections.Generic;
+
+public class ForceDirectedLayout : INodeLayoutAlgorithm
 {
-    
-    //Fruchterman-Reingold force-directed layout
-    Dictionary<(string nodeId, TimeSpan time), Vector3> _displacement;
-    private Vector3 delta;
-    private float distance;
-    private Vector3 direction;
+    public bool IsDynamic => true;
+    private readonly Dictionary<string, Vector3> _displacements = new();
 
-    private Vector3 force;
+    private const float IdealSpacing = 3f;
+    private float _temperature = 1f;
 
-    private float temperature = 1f;
-    private float displacementMagnitude = 1f; //TODO: is chosen by user later?
-
-    private int idealNodeSpacing = 2;
-
-    GraphData _graph;
-
-
-    void CalculateInitialPositions()
+    public Dictionary<(string, TimeSpan), Vector3> CalculateInitialPositions(GraphData graph)
     {
-        //read the initial positions of the data
-        
-    }
-    void UpdatePositions(GraphData graph, Dictionary<(string nodeId, TimeSpan time), Vector3> nodePositions)
-    {
-        _graph = graph;
-        foreach(KeyValuePair<(string, TimeSpan), Vector3> nodeU in nodePositions)
+        // Start from the initial data positions.
+        Dictionary<(string, TimeSpan), Vector3> positions = new();
+
+        for (int timestep = 0; timestep < graph.TimeSteps.Count; timestep++)
         {
-            foreach(KeyValuePair<(string, TimeSpan), Vector3> nodeV in nodePositions)
+            TimeSpan time = graph.TimeSteps[timestep];
+
+            foreach (Node node in graph.Nodes.Values)
             {
-                ComputeRepulse(nodeU.Key, nodeU.Value, nodeV.Key, nodeV.Value);
+                NodeSnapshot snapshot = node.DataSnapshots[time];
+
+                float graphOffset = VisualizationSettings.Instance.TimeStepZSize * timestep;
+                float height = graphOffset +
+                               GetNodeHeight(snapshot) *
+                               VisualizationSettings.Instance.NodeHeightScaleFactor;
+
+                positions[(node.Id, time)] =
+                    new Vector3(
+                        snapshot.Coordinates.x,
+                        height,
+                        snapshot.Coordinates.y);
             }
         }
 
-        ComputeAttraction(graph, nodePositions);
-
-        MoveNodes(nodePositions);
-        
+        return positions;
     }
 
-    void ComputeRepulse((string, TimeSpan) nodeU, Vector3 nodeUPos,(string, TimeSpan) nodeV, Vector3 nodeVPos)
+    public void UpdatePositions(
+        GraphData graph,
+        Dictionary<(string, TimeSpan), Vector3> positions)
     {
-        delta = nodeUPos - nodeVPos;
-        distance = delta.magnitude;
-        direction = delta/distance;
+        if (graph.TimeSteps.Count == 0)
+            return;
 
-        force = direction * (idealNodeSpacing * idealNodeSpacing /distance); //Fr(d) = k^2/d the repulsive force in Fruchterman-Reingold.
+        // Force layout only calculates topology in X/Z.
+        // All timesteps share topology positions.
+        // Y is calculated separately from timestep + height mapping.
+        TimeSpan baseTime = graph.TimeSteps[0]; 
 
-        _displacement[nodeU] += force;
-        _displacement[nodeV] -= force;
-    }
+        //----------------------------------------
+        // Reset displacements
+        //----------------------------------------
 
-    void ComputeAttraction(GraphData graph,Dictionary<(string nodeId, TimeSpan time), Vector3> nodePositions)
-    {
-        foreach(var edge in graph.Edges.Values)
+        _displacements.Clear();
+
+        foreach (Node node in graph.Nodes.Values)
+            _displacements[node.Id] = Vector3.zero;
+
+        //----------------------------------------
+        // Repulsive forces
+        //----------------------------------------
+
+        //TODO: fix bug: calculates every pair twice. 
+        foreach (Node u in graph.Nodes.Values)
         {
-            foreach( TimeSpan time in graph.TimeSteps)
+            foreach (Node v in graph.Nodes.Values)
             {
-                Vector3 posU = nodePositions[(edge.Node1.Id, time)];
-                Vector3 posV = nodePositions[(edge.Node2.Id, time)];
-                delta = posU - posV;
-                distance = delta.magnitude;
-                direction = delta/distance; 
+                if (u == v)
+                    continue;
+
+                Vector3 posU = positions[(u.Id, baseTime)];
+                Vector3 posV = positions[(v.Id, baseTime)];
+
+                Vector2 pU = new Vector2(posU.x, posU.z);
+                Vector2 pV = new Vector2(posV.x, posV.z);
+
+                Vector2 delta = pU - pV;
+
+                float distance = Mathf.Max(delta.magnitude, 0.01f);
+
+                Vector2 direction = delta.normalized;
+
+                float force = (IdealSpacing * IdealSpacing) / distance;
+
+                _displacements[u.Id] +=
+                    new Vector3(direction.x, 0, direction.y) * force;
             }
         }
 
-        
+        //----------------------------------------
+        // Attractive forces
+        //----------------------------------------
+
+        foreach (Edge edge in graph.Edges.Values)
+        {
+            Vector3 posU = positions[(edge.Node1.Id, baseTime)];
+            Vector3 posV = positions[(edge.Node2.Id, baseTime)];
+
+            Vector2 pU = new Vector2(posU.x, posU.z);
+            Vector2 pV = new Vector2(posV.x, posV.z);
+
+            Vector2 delta = pU - pV;
+
+            float distance = Mathf.Max(delta.magnitude, 0.01f);
+
+            Vector2 direction = delta.normalized;
+
+            float force = (distance * distance) / IdealSpacing;
+
+            Vector3 attraction =
+                new Vector3(direction.x, 0, direction.y) * force;
+
+            _displacements[edge.Node1.Id] -= attraction;
+            _displacements[edge.Node2.Id] += attraction;
+        }
+
+        //----------------------------------------
+        // Move first timestep
+        //----------------------------------------
+
+        foreach (Node node in graph.Nodes.Values)
+        {
+            Vector3 movement = _displacements[node.Id];
+
+            if (movement != Vector3.zero)
+            {
+                movement = movement.normalized *
+                           Mathf.Min(movement.magnitude, _temperature);
+            }
+
+            positions[(node.Id, baseTime)] += movement;
+        }
+
+        //----------------------------------------
+        // Copy X/Z to every timestep
+        //----------------------------------------
+
+        for (int timestep = 0; timestep < graph.TimeSteps.Count; timestep++)
+        {
+            TimeSpan time = graph.TimeSteps[timestep];
+
+            foreach (Node node in graph.Nodes.Values)
+            {
+                NodeSnapshot snapshot = node.DataSnapshots[time];
+
+                Vector3 basePosition =
+                    positions[(node.Id, baseTime)];
+
+                float graphOffset =
+                    VisualizationSettings.Instance.TimeStepZSize * timestep;
+
+                float height =
+                    graphOffset +
+                    GetNodeHeight(snapshot) *
+                    VisualizationSettings.Instance.NodeHeightScaleFactor;
+
+                positions[(node.Id, time)] =
+                    new Vector3(
+                        basePosition.x,
+                        height,
+                        basePosition.z);
+            }
+        }
+
+        //----------------------------------------
+        // Cool temperature
+        //----------------------------------------
+
+        _temperature *= 0.99f;
     }
 
-    void MoveNodes(Dictionary<(string nodeId, TimeSpan time), Vector3> nodePositions)
+    private float GetNodeHeight(NodeSnapshot nodeSnapshot)
     {
-        foreach(var node in nodePositions.Keys)
+        switch (VisualizationSettings.Instance.NodeHeightMapping)
         {
-            Vector3 movement = _displacement[node].Normalize();
-            movement *= Mathf.Min(displacementMagnitude, temperature);
-            temperature -= 0.01f;
-            nodePositions[node] += movement;
+            case VisualizationSettings.NodeHeightMappingOption.None:
+                return 1f;
+
+            case VisualizationSettings.NodeHeightMappingOption.VoltageAngle:
+                return CalculateZOffsetVoltageAngle(nodeSnapshot);
+
+            default:
+                return 0f;
         }
+    }
+
+    private float CalculateZOffsetVoltageAngle(NodeSnapshot nodeSnapshot)
+    {
+        return nodeSnapshot.VAngle;
     }
 }

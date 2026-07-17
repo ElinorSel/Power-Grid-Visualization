@@ -22,9 +22,14 @@ public class GraphLayout
         return NodePositions[(nodeId, time)];
     }
 
+    public bool IsDynamic()
+    {
+        return _layoutAlgorithm.IsDynamic;
+    }
+
     public void Initialize(INodeLayoutAlgorithm layoutAlgorithm, GraphData graphData)
     {
-        this._layoutAlgorithm = layoutAlgorithm;
+        _layoutAlgorithm = layoutAlgorithm;
         this.graph = graphData;
         for (int i = 0; i < graph.TimeSteps.Count; i++)
         {
@@ -42,17 +47,6 @@ public class GraphLayout
     public void UpdateLayout()
     {
         _layoutAlgorithm.UpdatePositions(graph, NodePositions);
-    }
 
-    public void UpdateSimulation()
-    {
-        int tempCounter = 0; //TODO: remove and replace with coroutine
-        while (_simulating)
-        {
-        _layoutAlgorithm.UpdatePositions(graph, NodePositions);
-        OnPositionsChanged?.Invoke();
-        tempCounter++;
-        if(tempCounter == 100) _simulating = false;
-        }
     }
 }

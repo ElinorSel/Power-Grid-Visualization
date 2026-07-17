@@ -8,5 +8,5 @@ public interface INodeLayoutAlgorithm
     //Vector3 GetNodePosition(Node node, TimeSpan time, int timeStepIndex);
     Dictionary<(string, TimeSpan), UnityEngine.Vector3> CalculateInitialPositions(GraphData graph);
     void UpdatePositions(GraphData graph, Dictionary<(string nodeId, TimeSpan time), Vector3> positions);
-
+    bool IsDynamic { get; }
 }

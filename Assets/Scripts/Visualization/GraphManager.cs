@@ -10,6 +10,8 @@ public class GraphManager : MonoBehaviour
     [SerializeField] private GameObject nodePrefab;
     [SerializeField] private Material edgeMaterial;
 
+    private Coroutine _simulationCoroutine;
+
     private GraphData _graphData;
     private GraphLayout _layout = new();
     private GraphStyle _style = new();
@@ -32,7 +34,7 @@ public class GraphManager : MonoBehaviour
         VisualizationSettings.Instance.OnEdgeColorChanged += HandleEdgeColorChanged;
         Debug.Log("Subscribed to label event");
     }
-    private void OnDistroy()
+    private void OnDestroy()
     {
         if (VisualizationSettings.Instance == null)return;
 
@@ -64,7 +66,6 @@ public class GraphManager : MonoBehaviour
 
         //create the Node and edges GameObjects, 
         StartCoroutine(InstantiateGraph());
-
     }
 
     private INodeLayoutAlgorithm CreateLayoutAlgorithm()
@@ -74,8 +75,7 @@ public class GraphManager : MonoBehaviour
             case VisualizationSettings.NodeLayoutAlgorithOption.InitialData:
                 return new InitalDataLayout();  
             case VisualizationSettings.NodeLayoutAlgorithOption.ForceDirected:
-                 //return new ForceDirected(); TODO:
-                 return new InitalDataLayout(); 
+                 return new ForceDirectedLayout(); 
             default:
                 Debug.LogWarning("Unknown / Unimplementedheight algorithm option for Node Layout. Using initial data instead.");
                 return new InitalDataLayout(); 
@@ -90,13 +90,18 @@ public class GraphManager : MonoBehaviour
             GameObject graphParent = new GameObject($"Hour_{currentTimeStep}");
             graphParent.transform.SetParent(visualization.transform);
 
-            Debug.Log("Instantiating nodes and edges.");
+            //Debug.Log("Instantiating nodes and edges.");
             yield return StartCoroutine(InstantiateNodes(graphParent, _graphData.TimeSteps[currentTimeStep],currentTimeStep));
             yield return StartCoroutine(InstantiateEdges(graphParent, _graphData.TimeSteps[currentTimeStep],currentTimeStep));
             // wait one frame before creating the next timestep
              yield return null;
         }
         Debug.Log("Finished instantiating graph");
+        if(_layout.IsDynamic()){ 
+            Debug.Log("Simulation is dynamic. Starting simulation....");
+            StartSimulation();
+        }
+
     }
 
     IEnumerator InstantiateNodes(GameObject graphParent, TimeSpan timeStep, int index)
@@ -149,25 +154,53 @@ public class GraphManager : MonoBehaviour
         }
     }
 
+        private IEnumerator RunSimulation()
+    {
+        WaitForSeconds wait = new(0.01f);
+        while(true)
+        {
+            _layout.UpdateLayout();
+
+            RefreshLayoutVisualizers();
+
+            yield return wait;
+        }
+    }
+
+    private void StartSimulation()
+    {
+        _simulationCoroutine = StartCoroutine(RunSimulation());
+    }
+
     //=============Event Handlers==========================
 
     private void HandleLayoutChanged()
     {
-        Debug.Log("Graph Manager: updating layout..." );
         _layout.UpdateLayout();
-         Debug.Log("Graph Manager: refreshing visualiszers..." );
         RefreshLayoutVisualizers();
     }
-        private void HandleLayoutAlgorithmChanged()
+    private void HandleLayoutAlgorithmChanged()
     {
-        _layout.SetAlgorithm(CreateLayoutAlgorithm());
-        _layout.UpdateLayout();
-        RefreshLayoutVisualizers();
-    }
+        if (_simulationCoroutine != null)
+        {
+            StopCoroutine(_simulationCoroutine);
+            _simulationCoroutine = null;
+        }
 
+        _layout.SetAlgorithm(CreateLayoutAlgorithm());
+
+        if (_layout.IsDynamic())
+        {
+            _simulationCoroutine = StartCoroutine(RunSimulation());
+        }
+        else
+        {
+            _layout.UpdateLayout();
+            RefreshLayoutVisualizers();
+        }
+    }
     private void HandleLabelSettingsChanged()
     {
-        Debug.Log("Graph manager: listened to event. Refreshing labels");
         foreach(var node in _nodeVisualizers)
         {
             node.RefreshLabel();
