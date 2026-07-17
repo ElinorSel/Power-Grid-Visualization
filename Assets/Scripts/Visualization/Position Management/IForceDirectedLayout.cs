@@ -5,10 +5,13 @@ using System.Collections.Generic;
 public class ForceDirectedLayout : INodeLayoutAlgorithm
 {
     public bool IsDynamic => true;
+    public bool IsSimulating => _temperature < 0.01f;
     private readonly Dictionary<string, Vector3> _displacements = new();
 
     private const float IdealSpacing = 3f;
     private float _temperature = 1f;
+
+   
 
     public Dictionary<(string, TimeSpan), Vector3> CalculateInitialPositions(GraphData graph)
     {

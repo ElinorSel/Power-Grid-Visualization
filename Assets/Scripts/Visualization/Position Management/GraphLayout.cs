@@ -8,10 +8,8 @@ using System;
 //  and the visualisers can then read the data from here
 public class GraphLayout
 {
-    event Action OnPositionsChanged;
     private Dictionary<TimeSpan, int> _timeStepLookup = new();
     private GraphData graph;
-    private bool _simulating;
     
     public Dictionary<(string nodeId, TimeSpan time), Vector3> NodePositions {get; private set;}= new(); //TODO: move to alg which need live updates. 
 
@@ -25,6 +23,10 @@ public class GraphLayout
     public bool IsDynamic()
     {
         return _layoutAlgorithm.IsDynamic;
+    }
+    public bool IsSimulating()
+    {
+        return _layoutAlgorithm.IsSimulating;
     }
 
     public void Initialize(INodeLayoutAlgorithm layoutAlgorithm, GraphData graphData)

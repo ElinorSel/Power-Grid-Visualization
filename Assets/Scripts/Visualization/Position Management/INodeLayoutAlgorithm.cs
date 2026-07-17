@@ -9,4 +9,6 @@ public interface INodeLayoutAlgorithm
     Dictionary<(string, TimeSpan), UnityEngine.Vector3> CalculateInitialPositions(GraphData graph);
     void UpdatePositions(GraphData graph, Dictionary<(string nodeId, TimeSpan time), Vector3> positions);
     bool IsDynamic { get; }
+    bool IsSimulating { get; }
+    
 }

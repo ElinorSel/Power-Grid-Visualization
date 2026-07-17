@@ -157,7 +157,7 @@ public class GraphManager : MonoBehaviour
         private IEnumerator RunSimulation()
     {
         WaitForSeconds wait = new(0.01f);
-        while(true)
+        while(!_layout.IsSimulating())
         {
             _layout.UpdateLayout();
 
@@ -165,6 +165,7 @@ public class GraphManager : MonoBehaviour
 
             yield return wait;
         }
+        Debug.Log("Stopped simulation.");
     }
 
     private void StartSimulation()

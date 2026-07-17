@@ -10,6 +10,8 @@ public class InitalDataLayout : INodeLayoutAlgorithm
 {
 
     public bool IsDynamic => false;
+    public bool IsSimulating => false;
+    
     //Fills the nodePositions dictionary In graphLayout with the initial data
     //Updates the nodePositions based on the graphData and viz settings
     //NOTE: in the nodeSnapshot class, currently it chooses randomly. TODO: make this conditional only if no data exists.
