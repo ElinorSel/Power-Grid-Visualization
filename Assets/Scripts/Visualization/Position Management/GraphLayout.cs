@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using Unity.Android.Gradle.Manifest;
 
 
 //This class stores the current locations for the Nodes during the viz. 
@@ -9,11 +8,14 @@ using Unity.Android.Gradle.Manifest;
 //  and the visualisers can then read the data from here
 public class GraphLayout
 {
-    private Dictionary<TimeSpan, int> timeStepLookup = new();
+    event Action OnPositionsChanged;
+    private Dictionary<TimeSpan, int> _timeStepLookup = new();
     private GraphData graph;
+    private bool _simulating;
+    
     public Dictionary<(string nodeId, TimeSpan time), Vector3> NodePositions {get; private set;}= new(); //TODO: move to alg which need live updates. 
 
-    private INodeLayoutAlgorithm layoutAlgorithm;
+    private INodeLayoutAlgorithm _layoutAlgorithm;
 
     public Vector3 GetNodePosition(string nodeId, TimeSpan time)
     {
@@ -22,11 +24,11 @@ public class GraphLayout
 
     public void Initialize(INodeLayoutAlgorithm layoutAlgorithm, GraphData graphData)
     {
-        this.layoutAlgorithm = layoutAlgorithm;
+        this._layoutAlgorithm = layoutAlgorithm;
         this.graph = graphData;
         for (int i = 0; i < graph.TimeSteps.Count; i++)
         {
-            timeStepLookup[graph.TimeSteps[i]] = i;
+            _timeStepLookup[graph.TimeSteps[i]] = i;
         }
         NodePositions = layoutAlgorithm.CalculateInitialPositions(graphData);
     }
@@ -34,11 +36,23 @@ public class GraphLayout
 
     public void SetAlgorithm(INodeLayoutAlgorithm algorithm)
     {
-        layoutAlgorithm = algorithm;
+        _layoutAlgorithm = algorithm;
     }
 
     public void UpdateLayout()
     {
-        layoutAlgorithm.UpdatePositions(graph, NodePositions);
+        _layoutAlgorithm.UpdatePositions(graph, NodePositions);
+    }
+
+    public void UpdateSimulation()
+    {
+        int tempCounter = 0; //TODO: remove and replace with coroutine
+        while (_simulating)
+        {
+        _layoutAlgorithm.UpdatePositions(graph, NodePositions);
+        OnPositionsChanged?.Invoke();
+        tempCounter++;
+        if(tempCounter == 100) _simulating = false;
+        }
     }
 }
