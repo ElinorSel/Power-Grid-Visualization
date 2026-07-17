@@ -188,7 +188,8 @@ public class GraphManager : MonoBehaviour
             _simulationCoroutine = null;
         }
 
-        _layout.SetAlgorithm(CreateLayoutAlgorithm());
+        _layout.Initialize(CreateLayoutAlgorithm(), _graphData);
+
 
         if (_layout.IsDynamic())
         {
