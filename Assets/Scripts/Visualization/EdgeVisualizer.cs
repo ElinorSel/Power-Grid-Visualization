@@ -115,22 +115,55 @@ public class EdgeVisualizer : MonoBehaviour
 
     public void RefreshDirectionArrow()
     {   
+        if (directionArrow == null)
+        {
+            return;
+        }
         if (Edge.Node1.DataSnapshots[Time].Power>0)
         {
             Vector3 direction = (endPosition - startPosition).normalized;
-            float size = _style.GetNodeSize(Edge.Node2, Time);
-            directionArrow.transform.position = endPosition - direction * size; 
+
+            float nodeSize = _style.GetNodeSize(Edge.Node2, Time);
+            float nodeRadius = nodeSize * 0.5f;
+
+            float width = _style.GetEdgeWidth(Edge, Time);
+            directionArrow.transform.localScale = new Vector3 (4*width, 5*width, 4*width);
+
+            float arrowHalfLength = directionArrow.transform.localScale.z * 0.5f;
+            float offset = nodeRadius + arrowHalfLength + 0.5f;
+
+            directionArrow.transform.position = endPosition - direction * offset; 
             directionArrow.transform.rotation = Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0);
+
             
         }
         else if (Edge.Node1.DataSnapshots[Time].Power<0) //flowing from Node2 to Node1
         {
             Vector3 direction = (startPosition - endPosition).normalized;
-            float size = _style.GetNodeSize(Edge.Node1, Time);
-            directionArrow.transform.position = startPosition - direction * size;
+
+            float nodeSize = _style.GetNodeSize(Edge.Node1, Time);
+            float nodeRadius = nodeSize * 0.5f;
+
+            float width = _style.GetEdgeWidth(Edge, Time);
+            directionArrow.transform.localScale = new Vector3 (4*width, 5*width, 4*width);
+
+            float arrowHalfLength = directionArrow.transform.localScale.z * 0.5f;
+            float offset = nodeRadius + arrowHalfLength + 0.5f;
+
+            directionArrow.transform.position = startPosition - direction * offset;
             directionArrow.transform.rotation = Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0);
         }
         
+    }
+
+    public void RefreshDirectionArrowSize()
+    {
+        if (directionArrow == null)
+        {
+            return;
+        }
+        float width = _style.GetEdgeWidth(Edge, Time);
+        directionArrow.transform.localScale = new Vector3 (4*width, 5*width, 4*width);
     }
     
 

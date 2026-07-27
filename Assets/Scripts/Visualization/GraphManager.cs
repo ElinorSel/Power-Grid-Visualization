@@ -216,6 +216,11 @@ public class GraphManager : MonoBehaviour
         {
             node.RefreshNodeSize();
         }
+
+        foreach (var edge in _edgeVisualizers)
+        {
+            edge.RefreshDirectionArrow();
+        }
     }
     private void HandleNodeColorChanged()
     {
@@ -229,6 +234,7 @@ public class GraphManager : MonoBehaviour
         foreach(var edge in _edgeVisualizers)
         {
             edge.RefreshWidth();
+            edge.RefreshDirectionArrow();
         }
     }
     private void HandleEdgeColorChanged()
