@@ -11,12 +11,12 @@ public class EdgeVisualizer : MonoBehaviour
     public int TimeStepIndex { get; private set; }
 
     private LineRenderer lineRenderer;
-
-    [SerializeField] private float width = 0.5f;
     [SerializeField] private GameObject arrowPrefab;
 
     private GraphLayout _layout;
     private GraphStyle _style; 
+
+    private GameObject directionArrow;
 
 
     public void Initialize(Edge data,TimeSpan time, int timeStepIndex, GraphLayout layout, GraphStyle style, Material edgeMaterial)
@@ -32,14 +32,14 @@ public class EdgeVisualizer : MonoBehaviour
         startPosition = layout.GetNodePosition(Edge.Node1.Id, time);
         endPosition = layout.GetNodePosition(Edge.Node2.Id, time);
         RenderEdge(style.GetEdgeWidth(Edge, time), edgeMaterial);
-        //Direction();  TODO: add back again once fixxed
+        RenderDirectionArrow();  //TODO: add back again once fixxed
         
     }
 
     void RenderEdge(float edgeWidth, Material edgeMaterial)
     {
         // Add a LineRenderer component
-        lineRenderer = gameObject.AddComponent<LineRenderer>();
+        lineRenderer = gameObject.GetComponent<LineRenderer>();
 
         lineRenderer.useWorldSpace = true;
 
@@ -83,22 +83,26 @@ public class EdgeVisualizer : MonoBehaviour
 
 
 
-    void Direction ()
+    public void RenderDirectionArrow()
     {
         //TODO: idk if the direction is correct
-        if (Edge.DataSnapshots[Time].Direction>0) //flowing from Node1 to Node2
+        if (Edge.Node1.DataSnapshots[Time].Power>0) //flowing from Node1 to Node2 
         {
             Vector3 direction = (endPosition - startPosition).normalized;
-            GameObject arrow = Instantiate(arrowPrefab, endPosition - direction * 2f, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
-            arrow.transform.localScale = new Vector3 (2*width, 2*width, 2*width);
-            arrow.name = "Arrow_" + Edge.Id;
+            float size = _style.GetNodeSize(Edge.Node2, Time);
+            directionArrow = Instantiate(arrowPrefab, endPosition - direction * size, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
+            float width = _style.GetEdgeWidth(Edge, Time);
+            directionArrow.transform.localScale = new Vector3 (4*width, 5*width, 4*width);
+            directionArrow.name = "Arrow_" + Edge.Id;
         }
-        else if (Edge.DataSnapshots[Time].Direction<0) //flowing from Node2 to Node1
+        else if (Edge.Node1.DataSnapshots[Time].Power<0) //flowing from Node2 to Node1
         {
             Vector3 direction = (startPosition - endPosition).normalized;
-            GameObject arrow = Instantiate(arrowPrefab, startPosition - direction * 2f, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
-            arrow.transform.localScale = new Vector3 (2*width, 2*width, 2*width);
-            arrow.name = "Arrow_" + Edge.Id;
+            float size = _style.GetNodeSize(Edge.Node1, Time);
+            directionArrow = Instantiate(arrowPrefab, startPosition - direction * size, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
+            float width = _style.GetEdgeWidth(Edge, Time);
+            directionArrow.transform.localScale = new Vector3 (4*width, 5*width, 4*width);
+            directionArrow.name = "Arrow_" + Edge.Id;
         }
         else
         {
@@ -107,6 +111,26 @@ public class EdgeVisualizer : MonoBehaviour
             Debug.LogWarning("No power flow in Edge_" + Edge.Id);
         }
 
+    }
+
+    public void RefreshDirectionArrow()
+    {   
+        if (Edge.Node1.DataSnapshots[Time].Power>0)
+        {
+            Vector3 direction = (endPosition - startPosition).normalized;
+            float size = _style.GetNodeSize(Edge.Node2, Time);
+            directionArrow.transform.position = endPosition - direction * size; 
+            directionArrow.transform.rotation = Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0);
+            
+        }
+        else if (Edge.Node1.DataSnapshots[Time].Power<0) //flowing from Node2 to Node1
+        {
+            Vector3 direction = (startPosition - endPosition).normalized;
+            float size = _style.GetNodeSize(Edge.Node1, Time);
+            directionArrow.transform.position = startPosition - direction * size;
+            directionArrow.transform.rotation = Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0);
+        }
+        
     }
     
 

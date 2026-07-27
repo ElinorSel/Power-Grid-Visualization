@@ -151,6 +151,7 @@ public class GraphManager : MonoBehaviour
         foreach(var edge in _edgeVisualizers)
         {
             edge.RefreshPosition();
+            edge.RefreshDirectionArrow();
         }
     }
 
