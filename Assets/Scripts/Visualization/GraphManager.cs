@@ -64,7 +64,7 @@ public class GraphManager : MonoBehaviour
         //Fill the layout with the initial graph data (saves the start positions of nodes and edges)
         _layout.Initialize(CreateLayoutAlgorithm(), _graphData);
 
-        //create the Node and edges GameObjects, 
+        //create the Node and edges GameObjects, also starts simulation if the simulation is dynamic
         StartCoroutine(InstantiateGraph());
     }
 
