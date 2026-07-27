@@ -1398,7 +1398,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataImporter
   makeDebugFiles: 0
-  TimeRange: 20
+  TimeRange: 1
   filePathConnections: Assets\Data\iee118_lines.csv
   fileFolderPath: Assets\Data\csv_output
   ConnectionsFromHeading: from_bus
@@ -1427,7 +1427,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GraphManager
   edgePrefab: {fileID: 3879456599183557431, guid: 90e304724caa8574b848f50e791c83c2, type: 3}
   nodePrefab: {fileID: 3420277170275869662, guid: 48d296a162d9c704bb4dfa3219a224ff, type: 3}
-  edgeMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  edgeMaterial: {fileID: -876546973899608171, guid: a501799f8fde23d4580e371689de9955, type: 3}
 --- !u!114 &585109297
 MonoBehaviour:
   m_ObjectHideFlags: 0

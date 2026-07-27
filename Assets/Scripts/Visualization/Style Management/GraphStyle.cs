@@ -66,6 +66,11 @@ public class GraphStyle
         }
     }
 
+        public float GetEdgeLoad(EdgeSnapshot edgeSnapshot)
+    {
+        return  Mathf.Clamp01(edgeSnapshot.Load/5); //TODO: should normalize from 0 to 1 insead of clamp
+    }
+
 /*
 
     public Color GetNodeColor(Node node, TimeSpan time)

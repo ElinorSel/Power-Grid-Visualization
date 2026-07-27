@@ -9,6 +9,7 @@ public class EdgeVisualizer : MonoBehaviour
     public EdgeSnapshot Snapshot { get; private set; }
     public TimeSpan Time { get; private set; }
     public int TimeStepIndex { get; private set; }
+    private MaterialPropertyBlock _propertyBlock;
 
     private LineRenderer lineRenderer;
 
@@ -29,15 +30,20 @@ public class EdgeVisualizer : MonoBehaviour
         
         TimeStepIndex = timeStepIndex;
 
+
         startPosition = layout.GetNodePosition(Edge.Node1.Id, time);
         endPosition = layout.GetNodePosition(Edge.Node2.Id, time);
         RenderEdge(style.GetEdgeWidth(Edge, time), edgeMaterial);
         //Direction();  TODO: add back again once fixxed
+
+        
         
     }
 
     void RenderEdge(float edgeWidth, Material edgeMaterial)
     {
+
+
         // Add a LineRenderer component
         lineRenderer = gameObject.AddComponent<LineRenderer>();
 
@@ -45,6 +51,16 @@ public class EdgeVisualizer : MonoBehaviour
 
         // Set the material
         lineRenderer.material = edgeMaterial;
+
+        //Add a property block so line renderers can share one material instance
+         _propertyBlock = new MaterialPropertyBlock();
+
+        lineRenderer.GetPropertyBlock(_propertyBlock);
+
+        _propertyBlock.SetFloat("_EdgeLoad", _style.GetEdgeLoad(Edge.DataSnapshots[Time]));
+
+        lineRenderer.SetPropertyBlock(_propertyBlock);
+
 
         // Set the color
         lineRenderer.startColor = Color.green;
@@ -60,6 +76,8 @@ public class EdgeVisualizer : MonoBehaviour
         // Set the positions of the vertices
         lineRenderer.SetPosition(0, startPosition);
         lineRenderer.SetPosition(1, endPosition);
+
+            
     } 
 
     public void RefreshPosition()
