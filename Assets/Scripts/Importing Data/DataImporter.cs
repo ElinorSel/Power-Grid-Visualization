@@ -143,7 +143,7 @@ public class DataImporter : MonoBehaviour
                 string  edgeID = data_values[i][edgeIDIndex];
                 Edge edge = Graph.Edges[edgeID]; //assuming that all edges have been imported in the first step
                 EdgeSnapshot dataSnapShot = new EdgeSnapshot(float.Parse(data_values[i][loadPercentIndex]), float.Parse(data_values[i][powerFromIndex]), float.Parse(data_values[i][powerToIndex]));
-                edge.DataSnapshots[TimeSpan.Parse(time.ToString())] = dataSnapShot;
+                edge.DataSnapshots[currentTime] = dataSnapShot;
             }
         }
 
