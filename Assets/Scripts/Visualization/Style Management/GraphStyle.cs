@@ -71,6 +71,11 @@ public class GraphStyle
         return  Mathf.Clamp01(edgeSnapshot.Load/5); //TODO: should normalize from 0 to 1 insead of clamp
     }
 
+    public float GetNodeAngle(NodeSnapshot nodeSnapshot)
+    {
+        return  Mathf.Clamp01(nodeSnapshot.VAngle/100); //TODO: should normalize some how because we have negative values
+    }
+
 /*
 
     public Color GetNodeColor(Node node, TimeSpan time)
