@@ -10,6 +10,8 @@ public class EdgeVisualizer : MonoBehaviour
     public TimeSpan Time { get; private set; }
     public int TimeStepIndex { get; private set; }
     private MaterialPropertyBlock _propertyBlock;
+    private MaterialPropertyBlock _propertyBlockArrow;
+    private MeshRenderer _arrowRenderer;  
 
     private LineRenderer lineRenderer;
     [SerializeField] private GameObject arrowPrefab;
@@ -53,6 +55,7 @@ public class EdgeVisualizer : MonoBehaviour
 
         //Add a property block so line renderers can share one material instance
          _propertyBlock = new MaterialPropertyBlock();
+         _propertyBlockArrow = new MaterialPropertyBlock();
 
         lineRenderer.GetPropertyBlock(_propertyBlock);
 
@@ -103,7 +106,7 @@ public class EdgeVisualizer : MonoBehaviour
     public void RenderDirectionArrow()
     {
         //TODO: idk if the direction is correct
-        if (Edge.Node1.DataSnapshots[Time].Power>0) //flowing from Node1 to Node2 
+        if (Edge.DataSnapshots[Time].Direction>0) //flowing from Node1 to Node2 
         {
     
             Vector3 direction = (endPosition - startPosition).normalized;
@@ -117,7 +120,7 @@ public class EdgeVisualizer : MonoBehaviour
 
         }
 
-        else if (Edge.Node1.DataSnapshots[Time].Power<0) //flowing from Node2 to Node1
+        else if (Edge.DataSnapshots[Time].Direction<0) //flowing from Node2 to Node1
         {
             Vector3 direction = (startPosition - endPosition).normalized;
             
@@ -136,6 +139,15 @@ public class EdgeVisualizer : MonoBehaviour
             Debug.LogWarning("No power flow in Edge_" + Edge.Id + "with power of" + Edge.Node1.DataSnapshots[Time].Power);
         }
 
+        if(directionArrow != null)
+         {
+            _arrowRenderer = directionArrow.GetComponent<MeshRenderer>();
+            _arrowRenderer.GetPropertyBlock(_propertyBlockArrow);
+            _propertyBlockArrow.SetFloat("_EdgeLoad", _style.GetEdgeLoad(Edge.DataSnapshots[Time]));
+            _arrowRenderer.SetPropertyBlock(_propertyBlockArrow);
+         }
+
+
     }
 
     public void RefreshDirectionArrow()
@@ -144,7 +156,7 @@ public class EdgeVisualizer : MonoBehaviour
         {
             return;
         }
-        if (Edge.Node1.DataSnapshots[Time].Power>0) //flowing from Node1 to Node2
+        if (Edge.DataSnapshots[Time].Direction>0) //flowing from Node1 to Node2
         {
             Vector3 nodePosition = endPosition;
             Vector3 direction = (endPosition - startPosition).normalized;
@@ -152,7 +164,7 @@ public class EdgeVisualizer : MonoBehaviour
             UpdateDirectionArrow(nodePosition, direction, nodeSize);
 
         }
-        else if (Edge.Node1.DataSnapshots[Time].Power<0) //flowing from Node2 to Node1
+        else if (Edge.DataSnapshots[Time].Direction<0) //flowing from Node2 to Node1
         {
             Vector3 nodePosition = startPosition;
             Vector3 direction = (startPosition - endPosition).normalized;
@@ -178,9 +190,8 @@ public class EdgeVisualizer : MonoBehaviour
         float tipDistance = Vector3.Dot(arrowTip.position - directionArrow.transform.position, direction);
 
         float nodeRadius = Mathf.Max(nodeSize * 0.5f, 0.05f);
-        //float minClearance = 0.15f;
 
-        float offset = nodeRadius + tipDistance;// + minClearance;
+        float offset = nodeRadius + tipDistance;
 
         directionArrow.transform.position = nodePosition - direction * offset;
         directionArrow.transform.rotation = Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0);
