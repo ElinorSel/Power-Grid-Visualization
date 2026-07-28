@@ -73,7 +73,7 @@ public class GraphStyle
 
     public float GetNodeAngle(NodeSnapshot nodeSnapshot)
     {
-        return  Mathf.Clamp01(nodeSnapshot.VAngle/100); //TODO: should normalize some how because we have negative values
+        return Mathf.InverseLerp(-50f, 50f, nodeSnapshot.VAngle);  
     }
 
 /*
