@@ -84,7 +84,7 @@ public class GraphManager : MonoBehaviour
 
     IEnumerator InstantiateGraph()
     {
-        GameObject visualization = new GameObject("Visualization");
+        GameObject visualization = new GameObject("_____VISUALIZATION____");
         for (int currentTimeStep = 0; currentTimeStep < _graphData.TimeSteps.Count; currentTimeStep++)
         {    
             GameObject graphParent = new GameObject($"Hour_{currentTimeStep}");

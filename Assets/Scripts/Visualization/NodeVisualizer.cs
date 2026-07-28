@@ -14,7 +14,9 @@ public class NodeVisualizer : MonoBehaviour
     public TimeSpan Time { get; private set; }
     public int TimeStepIndex { get; private set; }
     private GraphLayout _layout;
-    private GraphStyle _style;   
+    private GraphStyle _style;
+    private MaterialPropertyBlock _propertyBlock; 
+    private MeshRenderer _renderer;  
 
 
     //reads the style and layout data, and then renders the node / edge from this data
@@ -32,6 +34,11 @@ public class NodeVisualizer : MonoBehaviour
 
         transform.position = layout.GetNodePosition(data.Id, time);   
         transform.localScale = Vector3.one * _style.GetNodeSize(data, time);
+
+        //Add a property block so nodes can share one material instance
+         _propertyBlock = new MaterialPropertyBlock();
+         _renderer = GetComponent<MeshRenderer>();
+         RefreshNodeColor(); //set color based on vAngle
 
         // [Show Labels]
         nodeIDLabel.text = "Node_" + Node.Id;
@@ -57,6 +64,12 @@ public class NodeVisualizer : MonoBehaviour
     public void RefreshNodeColor()
     {
         //TODO: not implemented yet
+
+        float nodeAngle = _style.GetNodeAngle(Node.DataSnapshots[Time]);
+        _renderer.GetPropertyBlock(_propertyBlock);
+        _propertyBlock.SetFloat("_NodeAngle", nodeAngle);
+        _renderer.SetPropertyBlock(_propertyBlock);
+
     }
     
 }
