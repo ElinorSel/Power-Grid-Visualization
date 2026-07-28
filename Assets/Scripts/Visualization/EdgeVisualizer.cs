@@ -12,6 +12,7 @@ public class EdgeVisualizer : MonoBehaviour
 
     private LineRenderer lineRenderer;
     [SerializeField] private GameObject arrowPrefab;
+    private Transform arrowTip;
 
     private GraphLayout _layout;
     private GraphStyle _style; 
@@ -88,27 +89,35 @@ public class EdgeVisualizer : MonoBehaviour
         //TODO: idk if the direction is correct
         if (Edge.Node1.DataSnapshots[Time].Power>0) //flowing from Node1 to Node2 
         {
+    
             Vector3 direction = (endPosition - startPosition).normalized;
-            float size = _style.GetNodeSize(Edge.Node2, Time);
-            directionArrow = Instantiate(arrowPrefab, endPosition - direction * size, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
-            float width = _style.GetEdgeWidth(Edge, Time);
-            directionArrow.transform.localScale = new Vector3 (4*width, 5*width, 4*width);
+
+            directionArrow = Instantiate(arrowPrefab, endPosition, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
             directionArrow.name = "Arrow_" + Edge.Id;
+
+            Vector3 nodePosition = endPosition;
+            float nodeSize = _style.GetNodeSize(Edge.Node1, Time);
+            UpdateDirectionArrow(nodePosition, direction, nodeSize);
+
         }
+
         else if (Edge.Node1.DataSnapshots[Time].Power<0) //flowing from Node2 to Node1
         {
             Vector3 direction = (startPosition - endPosition).normalized;
-            float size = _style.GetNodeSize(Edge.Node1, Time);
-            directionArrow = Instantiate(arrowPrefab, startPosition - direction * size, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
-            float width = _style.GetEdgeWidth(Edge, Time);
-            directionArrow.transform.localScale = new Vector3 (4*width, 5*width, 4*width);
+            
+            directionArrow = Instantiate(arrowPrefab, startPosition, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
             directionArrow.name = "Arrow_" + Edge.Id;
+
+            Vector3 nodePosition = startPosition;
+            float nodeSize = _style.GetNodeSize(Edge.Node1, Time);
+            UpdateDirectionArrow(nodePosition, direction, nodeSize);
+
         }
         else
         {
             // No power flow, do not instantiate an arrow
             // If there is no flow we could change the color of the line
-            Debug.LogWarning("No power flow in Edge_" + Edge.Id);
+            Debug.LogWarning("No power flow in Edge_" + Edge.Id + "with power of" + Edge.Node1.DataSnapshots[Time].Power);
         }
 
     }
@@ -119,51 +128,47 @@ public class EdgeVisualizer : MonoBehaviour
         {
             return;
         }
-        if (Edge.Node1.DataSnapshots[Time].Power>0)
+        if (Edge.Node1.DataSnapshots[Time].Power>0) //flowing from Node1 to Node2
         {
+            Vector3 nodePosition = endPosition;
             Vector3 direction = (endPosition - startPosition).normalized;
+            float nodeSize = _style.GetNodeSize(Edge.Node1, Time);
+            UpdateDirectionArrow(nodePosition, direction, nodeSize);
 
-            float nodeSize = _style.GetNodeSize(Edge.Node2, Time);
-            float nodeRadius = nodeSize * 0.5f;
-
-            float width = _style.GetEdgeWidth(Edge, Time);
-            directionArrow.transform.localScale = new Vector3 (4*width, 5*width, 4*width);
-
-            float arrowHalfLength = directionArrow.transform.localScale.z * 0.5f;
-            float offset = nodeRadius + arrowHalfLength + 0.5f;
-
-            directionArrow.transform.position = endPosition - direction * offset; 
-            directionArrow.transform.rotation = Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0);
-
-            
         }
         else if (Edge.Node1.DataSnapshots[Time].Power<0) //flowing from Node2 to Node1
         {
+            Vector3 nodePosition = startPosition;
             Vector3 direction = (startPosition - endPosition).normalized;
-
             float nodeSize = _style.GetNodeSize(Edge.Node1, Time);
-            float nodeRadius = nodeSize * 0.5f;
+            UpdateDirectionArrow(nodePosition, direction, nodeSize);
 
-            float width = _style.GetEdgeWidth(Edge, Time);
-            directionArrow.transform.localScale = new Vector3 (4*width, 5*width, 4*width);
-
-            float arrowHalfLength = directionArrow.transform.localScale.z * 0.5f;
-            float offset = nodeRadius + arrowHalfLength + 0.5f;
-
-            directionArrow.transform.position = startPosition - direction * offset;
-            directionArrow.transform.rotation = Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0);
         }
         
     }
 
-    public void RefreshDirectionArrowSize()
+    private void UpdateDirectionArrow(Vector3 nodePosition, Vector3 direction, float nodeSize)
     {
-        if (directionArrow == null)
+        arrowTip = directionArrow.transform.Find("Tip");
+        if (arrowTip == null)
         {
+            Debug.LogError($"Arrow prefab for Edge_{Edge.Id} is missing a 'Tip' child.");
             return;
         }
+
         float width = _style.GetEdgeWidth(Edge, Time);
         directionArrow.transform.localScale = new Vector3 (4*width, 5*width, 4*width);
+
+        float tipDistance = Vector3.Dot(arrowTip.position - directionArrow.transform.position, direction);
+
+        float nodeRadius = Mathf.Max(nodeSize * 0.5f, 0.05f);
+        //float minClearance = 0.15f;
+
+        float offset = nodeRadius + tipDistance;// + minClearance;
+
+        directionArrow.transform.position = nodePosition - direction * offset;
+        directionArrow.transform.rotation = Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0);
+
     }
     
 
