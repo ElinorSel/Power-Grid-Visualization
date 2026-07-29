@@ -47,6 +47,7 @@ public class GraphManager : MonoBehaviour
         VisualizationSettings.Instance.OnEdgeColorChanged -= HandleEdgeColorChanged;
     }
 
+    /*
     void Start()
     {
         SubscribeToSettingsEvents();
@@ -67,6 +68,66 @@ public class GraphManager : MonoBehaviour
         //create the Node and edges GameObjects, also starts simulation if the simulation is dynamic
         StartCoroutine(InstantiateGraph());
     }
+    */
+
+        private void Start()
+    {
+        SubscribeToSettingsEvents();
+
+        dataImporter = GetComponent<DataImporter>();
+
+        if (dataImporter == null)
+        {
+            Debug.LogError("DataImporter component not found on the GameObject.");
+            return;
+        }
+
+        StartCoroutine(LoadGraph());
+    }
+    private IEnumerator LoadGraph()
+{
+    Debug.Log("Loading graph data...");
+
+    // Wait until DataImporter has finished loading all CSV files
+    yield return StartCoroutine(
+        dataImporter.ImportData(
+            graphData =>
+            {
+                _graphData = graphData;
+            }
+        )
+    );
+
+    // Make sure the data was successfully imported
+    if (_graphData == null ||
+        _graphData.Nodes.Count == 0 ||
+        _graphData.Edges.Count == 0)
+    {
+        Debug.LogError(
+            "Graph data failed to import " +
+            "(missing graph, nodes, or edges)."
+        );
+        yield break;
+    }
+
+    Debug.Log(
+        $"Graph data loaded. " +
+        $"Nodes: {_graphData.Nodes.Count}, " +
+        $"Edges: {_graphData.Edges.Count}, " +
+        $"Timesteps: {_graphData.TimeSteps.Count}"
+    );
+
+    // Initialize layout after data has finished loading
+    _layout.Initialize(
+        CreateLayoutAlgorithm(),
+        _graphData
+    );
+
+    // Create the graph
+    yield return StartCoroutine(
+        InstantiateGraph()
+    );
+}
 
     private INodeLayoutAlgorithm CreateLayoutAlgorithm()
     {

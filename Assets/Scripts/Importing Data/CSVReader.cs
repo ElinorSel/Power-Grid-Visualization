@@ -1,32 +1,62 @@
 using UnityEngine;
+using UnityEngine.Networking;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 
 public class CSVReader : MonoBehaviour
 {
-    private string filePath;
-    
-    private List<string[]> data_values;
-    public List<string[]> ReadCSVFile(string filePath)
+    /// <summary>
+    /// Loads and parses a CSV file from a path or URL.
+    /// Works in the Unity Editor, Android, and WebGL.
+    /// </summary>
+    public IEnumerator ReadCSVFile(
+        string filePath,
+        Action<List<string[]>> onComplete)
     {
-        data_values = new List<string[]>();
-        using (StreamReader strReader = new StreamReader(filePath))
+        using (UnityWebRequest request = UnityWebRequest.Get(filePath))
         {
-            bool endOfFile = false;
-            while(!endOfFile)
+            yield return request.SendWebRequest();
+
+            if (request.result != UnityWebRequest.Result.Success)
             {
-                string data_String = strReader.ReadLine();
-                if(data_String == null)
-            {
-                endOfFile = true;
-                break;
+                Debug.LogError(
+                    $"Failed to read CSV file:\n" +
+                    $"Path: {filePath}\n" +
+                    $"Error: {request.error}"
+                );
+
+                onComplete?.Invoke(null);
+                yield break;
             }
-            data_values.Add(data_String.Split(','));
-            }
+
+            string csvText = request.downloadHandler.text;
+
+            List<string[]> dataValues = ParseCSV(csvText);
+
+            onComplete?.Invoke(dataValues);
         }
-        return data_values;
     }
 
 
+    /// <summary>
+    /// Parses CSV text into a list of string arrays.
+    /// Each array represents one row.
+    /// </summary>
+    private List<string[]> ParseCSV(string csvText)
+    {
+        List<string[]> dataValues = new List<string[]>();
+
+        string[] lines = csvText.Split(
+            new[] { "\r\n", "\r", "\n" },
+            StringSplitOptions.RemoveEmptyEntries
+        );
+
+        foreach (string line in lines)
+        {
+            dataValues.Add(line.Split(','));
+        }
+
+        return dataValues;
+    }
 }
