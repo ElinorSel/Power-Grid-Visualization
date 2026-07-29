@@ -77,9 +77,9 @@ public class GraphLayout
 
                 float equalSpacing = spacePerTimestep * timestep; //decides that each timestep should be placed depending on a max distance
                 float overrideEqualSpacing = VisualizationSettings.Instance.TimeStepZSize; //* timestep; //TODO: keep? overrides the automatic spacing
-                float height = overrideEqualSpacing + equalSpacing +
+                float height = overrideEqualSpacing * (equalSpacing +
                                GetNodeHeight(snapshot) *
-                               VisualizationSettings.Instance.NodeHeightScaleFactor;
+                               VisualizationSettings.Instance.NodeHeightScaleFactor);
                 
                 UnityEngine.Vector3 pos = NodePositions[(node.Id, time)];
                 pos.y = height;
