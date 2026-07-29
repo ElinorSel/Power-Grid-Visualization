@@ -1668,7 +1668,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataImporter
   makeDebugFiles: 0
-  TimeRange: 1
+  TimeRange: 24
   filePathConnections: Assets\Data\iee118_lines.csv
   fileFolderPath: Assets\Data\csv_output
   ConnectionsFromHeading: from_bus
@@ -1712,6 +1712,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VisualizationSettings
   showLabels: 1
   timeStepZSize: 2
+  visibleStartIndex: 0
+  visibleEndIndex: 0
   nodeLayoutAlgorithm: 1
   nodeHeightMapping: 1
   nodeHeightScaleFactor: 0.05
@@ -4588,13 +4590,13 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   m_MinValue: 0
-  m_MaxValue: 12
+  m_MaxValue: 2
   m_Direction: 0
   m_FillRect: {fileID: 1891970875}
   m_MaxHandleRect: {fileID: 470752984}
   m_MinHandleRect: {fileID: 1497769516}
   m_WholeNumbers: 1
-  m_MaxLimit: 24
+  m_MaxLimit: 23
   m_MinLimit: 0
   m_moveOnlyByHandles: 1
 --- !u!1 &1372595129

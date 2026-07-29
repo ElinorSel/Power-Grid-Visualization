@@ -11,6 +11,7 @@ public class VisualizationSettings : MonoBehaviour
     public event Action OnNodeColorChanged;
     public event Action OnEdgeWidthChanged;
     public event Action OnEdgeColorChanged;
+    public event Action OnTimeRangeChanged;
     public static VisualizationSettings Instance { get; private set; }
 
     public enum NodeHeightMappingOption
@@ -62,8 +63,17 @@ public class VisualizationSettings : MonoBehaviour
      private float timeStepZSize;
 
     [SerializeField]
+    [Tooltip("The earliest time that will show")]
+     private int visibleStartIndex;
+
+    [SerializeField]
+    [Tooltip("The latest time that will show")]
+     private int visibleEndIndex;
+
+    [SerializeField]
     [Tooltip("Which Algorithm used to calculate node positions")]
     private NodeLayoutAlgorithOption nodeLayoutAlgorithm;
+    
 
 
 
@@ -112,6 +122,11 @@ public class VisualizationSettings : MonoBehaviour
     public float NodeSizeScaleFactor => nodeSizeScaleFactor;
     public float TimeStepZSize => timeStepZSize;
     public float EdgeWidthScaleFactor => edgeWidthScaleFactor;
+
+    public int VisibleStartIndex => visibleStartIndex;
+    public int VisibleEndIndex => visibleEndIndex;
+
+
 
 
     private void Awake()
@@ -209,6 +224,18 @@ public class VisualizationSettings : MonoBehaviour
         if(edgeWidthMapping == mapping) return;
         edgeWidthMapping = mapping;
         OnEdgeWidthChanged?.Invoke(); //TODO: this handler needs to be changed in the viz manager to work more like the layout alogorithm change
+    }
+
+    public void SetTimeRange(float minValue, float maxValue)
+    {
+        if (visibleStartIndex == Mathf.RoundToInt(minValue) && visibleEndIndex == Mathf.RoundToInt(maxValue))
+            return;
+
+        visibleStartIndex = Mathf.RoundToInt(minValue);
+        visibleEndIndex   = Mathf.RoundToInt(maxValue);
+
+        OnTimeRangeChanged?.Invoke();
+        
     }
 
 }

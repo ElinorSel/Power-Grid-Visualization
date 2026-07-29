@@ -47,18 +47,31 @@ public class VizUI : MonoBehaviour
 
     public void SetTimeRange(float minValue, float maxValue)
     {
-        Debug.Log("On values changed min: " + minValue + "max: " + maxValue);
-        
+        VisualizationSettings.Instance.SetTimeRange(minValue, maxValue);  
     }
 
     public void UpdateTimeRangeMinLabel(float value)
     {
-        minLabel.text = value.ToString();
+        if (value<10)
+        {
+            minLabel.text = "0"+ value + ":00"; //value.ToString();
+        }
+        else
+        {
+            minLabel.text = value + ":00";
+        }
     }
 
     public void UpdateTimeRangeMaxLabel(float value)
     {
-        maxLabel.text = value.ToString();
+        if (value<10)
+        {
+            maxLabel.text = "0"+ value + ":00"; //value.ToString();
+        }
+        else
+        {
+            maxLabel.text = value + ":00";
+        }
     }
 
 

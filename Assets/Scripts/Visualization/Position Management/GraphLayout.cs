@@ -58,18 +58,32 @@ public class GraphLayout
 
 //____________________________Height calculations______________-
 
-    public void UpdateHeightPositions()
+    public void UpdateHeightPositions(IReadOnlyList<TimeSpan> visibleTimeSteps = null)
     {
+        if (_graph == null || _graph.TimeSteps == null || _graph.TimeSteps.Count == 0)
+            return;
+
+        List<TimeSpan> timesToProcess = new List<TimeSpan>();
+
+        if (visibleTimeSteps != null && visibleTimeSteps.Count > 0)
+        {
+            timesToProcess.AddRange(visibleTimeSteps);
+        }
+        else
+        {
+            timesToProcess.AddRange(_graph.TimeSteps);
+        }
+
         float ceiling = 30;
         float floor = 0;
 
         float availibleSpace = ceiling - floor;
 
-        float spacePerTimestep = availibleSpace / _graph.TimeSteps.Count;
+        float spacePerTimestep = availibleSpace / timesToProcess.Count;
 
-        for (int timestep = 0; timestep < _graph.TimeSteps.Count; timestep++)
+        for (int timestep = 0; timestep < timesToProcess.Count; timestep++)
         {
-            TimeSpan time = _graph.TimeSteps[timestep]; //get the timespan related to that timestep index
+            TimeSpan time = timesToProcess[timestep]; //get the timespan related to that timestep index
 
             foreach (Node node in _graph.Nodes.Values)
             {

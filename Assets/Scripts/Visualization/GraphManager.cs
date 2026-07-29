@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Collections;
+using System.Linq;
 
 public class GraphManager : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class GraphManager : MonoBehaviour
     private readonly List<NodeVisualizer> _nodeVisualizers = new();
     private readonly List<EdgeVisualizer> _edgeVisualizers = new();
 
+    private Dictionary<int, GameObject> _timeStepParents = new();
+
     private void SubscribeToSettingsEvents() {
         if (VisualizationSettings.Instance == null)
         {
@@ -32,6 +35,7 @@ public class GraphManager : MonoBehaviour
         VisualizationSettings.Instance.OnNodeColorChanged += HandleNodeColorChanged;
         VisualizationSettings.Instance.OnEdgeWidthChanged += HandleEdgeWidthChanged;
         VisualizationSettings.Instance.OnEdgeColorChanged += HandleEdgeColorChanged;
+        VisualizationSettings.Instance.OnTimeRangeChanged += HandleTimeRangeChanged;
         Debug.Log("Subscribed to label event");
     }
     private void OnDestroy()
@@ -45,6 +49,7 @@ public class GraphManager : MonoBehaviour
         VisualizationSettings.Instance.OnNodeColorChanged -= HandleNodeColorChanged;
         VisualizationSettings.Instance.OnEdgeWidthChanged -= HandleEdgeWidthChanged;
         VisualizationSettings.Instance.OnEdgeColorChanged -= HandleEdgeColorChanged;
+        VisualizationSettings.Instance.OnTimeRangeChanged -= HandleTimeRangeChanged;
     }
 
     void Start()
@@ -89,6 +94,7 @@ public class GraphManager : MonoBehaviour
         {    
             GameObject graphParent = new GameObject($"Hour_{currentTimeStep}");
             graphParent.transform.SetParent(visualization.transform);
+            _timeStepParents[currentTimeStep] = graphParent;
 
             //Debug.Log("Instantiating nodes and edges.");
             yield return StartCoroutine(InstantiateNodes(graphParent, _graphData.TimeSteps[currentTimeStep],currentTimeStep));
@@ -174,6 +180,35 @@ public class GraphManager : MonoBehaviour
         _simulationCoroutine = StartCoroutine(RunSimulation());
     }
 
+    //=============Time Range Functions ========================
+        private List<TimeSpan> GetVisibleTimeSteps()
+    {
+        int startIndex = VisualizationSettings.Instance.VisibleStartIndex;
+        int endIndex = VisualizationSettings.Instance.VisibleEndIndex;
+
+        if (startIndex < 0) startIndex = 0;
+        if (endIndex >= _graphData.TimeSteps.Count) endIndex = _graphData.TimeSteps.Count - 1;
+        return _graphData.TimeSteps
+        .Where((timeStep, index) => index >= startIndex && index <= endIndex)
+        .ToList();
+    }
+
+    private void UpdateTimeStepVisibility()
+    {
+        for (int i = 0; i < _graphData.TimeSteps.Count; i++)
+            {
+                bool isVisible = IsTimeStepVisible(i);
+
+                _timeStepParents[i].SetActive(isVisible);
+            }
+    }
+
+    private bool IsTimeStepVisible(int index)
+    {
+        return index >= VisualizationSettings.Instance.VisibleStartIndex
+                && index <= VisualizationSettings.Instance.VisibleEndIndex;
+    }
+
     //=============Event Handlers==========================
 
     private void HandleLayoutChanged()
@@ -244,4 +279,12 @@ public class GraphManager : MonoBehaviour
             edge.RefreshColor();
         }
     }
+
+    private void HandleTimeRangeChanged()
+    {
+        List<TimeSpan> visibleTimeSteps = GetVisibleTimeSteps();
+        UpdateTimeStepVisibility();
+        _layout.UpdateHeightPositions(visibleTimeSteps);
+    }
+
 }
