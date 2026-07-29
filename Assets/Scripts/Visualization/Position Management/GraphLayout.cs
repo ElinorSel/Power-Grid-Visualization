@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Unity.GraphToolkit.Editor;
 
 
 //This class stores the current locations for the Nodes during the viz. 
@@ -9,10 +10,11 @@ using System;
 public class GraphLayout
 {
     private Dictionary<TimeSpan, int> _timeStepLookup = new();
-    private GraphData graph;
+    private GraphData _graph;
     
     public Dictionary<(string nodeId, TimeSpan time), Vector3> NodePositions {get; private set;}= new(); //TODO: move to alg which need live updates. 
 
+    private Dictionary<TimeSpan, float> _timeStepHeights;   //Store the base heights for each time step.
     private INodeLayoutAlgorithm _layoutAlgorithm;
 
     public Vector3 GetNodePosition(string nodeId, TimeSpan time)
@@ -32,12 +34,13 @@ public class GraphLayout
     public void Initialize(INodeLayoutAlgorithm layoutAlgorithm, GraphData graphData)
     {
         _layoutAlgorithm = layoutAlgorithm;
-        this.graph = graphData;
-        for (int i = 0; i < graph.TimeSteps.Count; i++)
+        this._graph = graphData;
+        for (int i = 0; i < _graph.TimeSteps.Count; i++)
         {
-            _timeStepLookup[graph.TimeSteps[i]] = i;
+            _timeStepLookup[_graph.TimeSteps[i]] = i;
         }
-        NodePositions = layoutAlgorithm.CalculateInitialPositions(graphData);
+        NodePositions = layoutAlgorithm.CalculateInitialPositions(graphData); //only updates x and y
+        UpdateHeightPositions(); //updates height
     }
     
 
@@ -48,7 +51,63 @@ public class GraphLayout
 
     public void UpdateLayout()
     {
-        _layoutAlgorithm.UpdatePositions(graph, NodePositions);
+        _layoutAlgorithm.UpdatePositions(_graph, NodePositions); //only updates x and y
+        UpdateHeightPositions(); //updates hight 
 
+    }
+
+//____________________________Height calculations______________-
+
+    public void UpdateHeightPositions()
+    {
+        float ceiling = 30;
+        float floor = 0;
+
+        float availibleSpace = ceiling - floor;
+
+        float spacePerTimestep = availibleSpace / _graph.TimeSteps.Count;
+
+        for (int timestep = 0; timestep < _graph.TimeSteps.Count; timestep++)
+        {
+            TimeSpan time = _graph.TimeSteps[timestep]; //get the timespan related to that timestep index
+
+            foreach (Node node in _graph.Nodes.Values)
+            {
+                NodeSnapshot snapshot = node.DataSnapshots[time];
+
+                float equalSpacing = spacePerTimestep * timestep; //decides that each timestep should be placed depending on a max distance
+                float overrideEqualSpacing = VisualizationSettings.Instance.TimeStepZSize; //* timestep; //TODO: keep? overrides the automatic spacing
+                float height = overrideEqualSpacing * (equalSpacing +
+                               GetNodeHeight(snapshot) *
+                               VisualizationSettings.Instance.NodeHeightScaleFactor);
+                
+                UnityEngine.Vector3 pos = NodePositions[(node.Id, time)];
+                pos.y = height;
+
+                NodePositions[(node.Id, time)] = pos;
+            }
+        }
+        
+    }
+
+    
+    private float GetNodeHeight(NodeSnapshot nodeSnapshot)
+    {
+        switch (VisualizationSettings.Instance.NodeHeightMapping)
+        {
+            case VisualizationSettings.NodeHeightMappingOption.None:
+                return 1f;
+
+            case VisualizationSettings.NodeHeightMappingOption.VoltageAngle:
+                return CalculateZOffsetVoltageAngle(nodeSnapshot);
+
+            default:
+                return 0f;
+        }
+    }
+
+    private float CalculateZOffsetVoltageAngle(NodeSnapshot nodeSnapshot)
+    {
+        return nodeSnapshot.VAngle;
     }
 }
