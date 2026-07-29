@@ -34,7 +34,9 @@ public class InitalDataLayout : INodeLayoutAlgorithm
 
     public void UpdatePositions(GraphData graph, Dictionary<(string, TimeSpan), UnityEngine.Vector3> positions) //Need a reference to nodes dictionary from graphManager?
     {
-         Debug.Log("layout Algorithm: updating layout..." );
+        /* OLD CODE from when height was calculated inside the layout alg. now its done in graph layout
+        
+        Debug.Log("layout Algorithm: updating layout..." );
         for (int timeStepIndex = 0; timeStepIndex < graph.TimeSteps.Count; timeStepIndex++)
         {
             TimeSpan time = graph.TimeSteps[timeStepIndex];
@@ -48,23 +50,24 @@ public class InitalDataLayout : INodeLayoutAlgorithm
                 positions[(node.Id, time)] = pos;
             }
         }
+        */
     }
 
 
      private UnityEngine.Vector3 CalculatePosition(NodeSnapshot snapshot, int timestep)
     {
-        float graphOffset = VisualizationSettings.Instance.TimeStepZSize * timestep;
-        float height = graphOffset + (GetNodeHeight(snapshot) * VisualizationSettings.Instance.NodeHeightScaleFactor);
+        //float graphOffset = VisualizationSettings.Instance.TimeStepZSize * timestep;
+        //float height = graphOffset + (GetNodeHeight(snapshot) * VisualizationSettings.Instance.NodeHeightScaleFactor);
 
         return new UnityEngine.Vector3(
             snapshot.Coordinates.x,
-            height,
+            0,
             snapshot.Coordinates.y
         );
     }
 
 
-//TODO: calculate nodeheight in a different class to reduce code repitition?
+//TODO: can remove all below code related to height calculations
         private float GetNodeHeight(NodeSnapshot nodeSnapshot)
     {
         // [Height Mapping]

@@ -26,15 +26,11 @@ public class ForceDirectedLayout : INodeLayoutAlgorithm
             {
                 NodeSnapshot snapshot = node.DataSnapshots[time];
 
-                float graphOffset = VisualizationSettings.Instance.TimeStepZSize * timestep;
-                float height = graphOffset +
-                               GetNodeHeight(snapshot) *
-                               VisualizationSettings.Instance.NodeHeightScaleFactor;
 
                 positions[(node.Id, time)] =
                     new Vector3(
                         snapshot.Coordinates.x,
-                        height,
+                        0,
                         snapshot.Coordinates.y);
             }
         }
@@ -153,18 +149,15 @@ public class ForceDirectedLayout : INodeLayoutAlgorithm
                 Vector3 basePosition =
                     positions[(node.Id, baseTime)];
 
-                float graphOffset =
-                    VisualizationSettings.Instance.TimeStepZSize * timestep;
+                //float graphOffset =
+                    //VisualizationSettings.Instance.TimeStepZSize * timestep;
 
-                float height =
-                    graphOffset +
-                    GetNodeHeight(snapshot) *
-                    VisualizationSettings.Instance.NodeHeightScaleFactor;
+                
 
                 positions[(node.Id, time)] =
                     new Vector3(
                         basePosition.x,
-                        height,
+                        0,
                         basePosition.z);
             }
         }
@@ -176,23 +169,4 @@ public class ForceDirectedLayout : INodeLayoutAlgorithm
         _temperature *= 0.99f;
     }
 
-    private float GetNodeHeight(NodeSnapshot nodeSnapshot)
-    {
-        switch (VisualizationSettings.Instance.NodeHeightMapping)
-        {
-            case VisualizationSettings.NodeHeightMappingOption.None:
-                return 1f;
-
-            case VisualizationSettings.NodeHeightMappingOption.VoltageAngle:
-                return CalculateZOffsetVoltageAngle(nodeSnapshot);
-
-            default:
-                return 0f;
-        }
-    }
-
-    private float CalculateZOffsetVoltageAngle(NodeSnapshot nodeSnapshot)
-    {
-        return nodeSnapshot.VAngle;
-    }
 }
