@@ -240,7 +240,7 @@ public class GraphManager : MonoBehaviour
 
         private IEnumerator RunSimulation()
     {
-        WaitForSeconds wait = new(0.01f);
+        WaitForSeconds wait = new(0.004f);
         while(!_layout.IsSimulating())
         {
             _layout.UpdateLayout();
