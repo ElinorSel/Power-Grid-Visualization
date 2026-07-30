@@ -31,6 +31,11 @@ public class DataImporter : MonoBehaviour
     [SerializeField] private string ConnectionsInServiceHeading;
     [SerializeField] private string ConnectionsMaxLoadHeading;
 
+    [Header("Transfromer Connections CSV Headers")]
+
+    [SerializeField] private string TransformerConnectionsFromHeading;
+    [SerializeField] private string TransformerConnectionsToHeading;
+
 
     [Header("Node CSV Headers")]
 
@@ -45,6 +50,15 @@ public class DataImporter : MonoBehaviour
     [SerializeField] private string EdgeLoadHeading;
     [SerializeField] private string EdgePowerFromHeading;
     [SerializeField] private string EdgePowerToHeading;
+
+
+    [Header("Transformer CSV Headers")]
+
+    [SerializeField] private string TransformerIDHeading = "";
+    [SerializeField] private string TransformerLoadHeading;
+    [SerializeField] private string TransformerPowerFromHeading;
+    [SerializeField] private string TransformerPowerToHeading;
+
 
 
     // =========================================================
@@ -107,6 +121,10 @@ public class DataImporter : MonoBehaviour
             ConnectEdgesToNodes()
         );
 
+        yield return StartCoroutine(
+            ConnectTransformersToNodes()
+        );
+
 
         Debug.Log(
             $"Connections imported. " +
@@ -144,7 +162,20 @@ public class DataImporter : MonoBehaviour
 
 
         // =====================================================
-        // 4. CREATE DEBUG FILES
+        // 4. IMPORT TRANSFORMER DATA
+        // =====================================================
+
+        yield return StartCoroutine(
+            ImportHourTransformerData()
+        );
+
+
+        Debug.Log(
+            "Edge data imported successfully."
+        );
+
+        // =====================================================
+        // 5. CREATE DEBUG FILES
         // =====================================================
 
         if (makeDebugFiles)
@@ -280,22 +311,13 @@ public class DataImporter : MonoBehaviour
         // FIND HEADER INDICES
         // =====================================================
 
-        string[] dataHeaders =
-            dataValues[0];
+        string[] dataHeaders = dataValues[0];
 
 
-        int node1IDIndex =
-            Array.IndexOf(
-                dataHeaders,
-                ConnectionsFromHeading
-            );
+        int node1IDIndex = Array.IndexOf(dataHeaders, ConnectionsFromHeading);
 
 
-        int node2IDIndex =
-            Array.IndexOf(
-                dataHeaders,
-                ConnectionsToHeading
-            );
+        int node2IDIndex = Array.IndexOf(dataHeaders, ConnectionsToHeading);
 
 
         int edgeIDIndex =
@@ -369,37 +391,115 @@ public class DataImporter : MonoBehaviour
 
 
 
-            string edgeID =
-                dataValues[i][edgeIDIndex];
+            string edgeID = dataValues[i][edgeIDIndex];
 
 
-            bool inService =
-                bool.Parse(
-                    dataValues[i][inServiceIndex]
-                );
+            bool inService = bool.Parse(dataValues[i][inServiceIndex]);
 
 
-            float maxLoad =
-                ParseFloat(
-                    dataValues[i][maxLoadIndex]
-                );
+            float maxLoad = ParseFloat(dataValues[i][maxLoadIndex]);
+
+            Node node1 = ImportNode(node1ID);
 
 
-            Node node1 =
-                ImportNode(node1ID);
+            Node node2 = ImportNode(node2ID);
 
 
-            Node node2 =
-                ImportNode(node2ID);
+            ImportEdge(edgeID, inService, maxLoad, node1, node2);
+        }
 
 
-            ImportEdge(
-                edgeID,
-                inService,
-                maxLoad,
-                node1,
-                node2
-            );
+        Debug.Log(
+            $"Imported {Graph.Nodes.Count} nodes " +
+            $"and {Graph.Edges.Count} edges."
+        );
+    }
+
+
+    private IEnumerator ConnectTransformersToNodes()
+    {
+        string filePath = GetDataFilePath("ieee118_transfo.csv");
+        List<string[]> dataValues = null;
+
+        // Load CSV asynchronously
+        yield return StartCoroutine(
+            _csvReader.ReadCSVFile(
+                filePath,
+                result =>
+                {
+                    dataValues = result;
+                }
+            )
+        );
+
+
+        // Check that the file loaded successfully
+        if (dataValues == null ||dataValues.Count == 0)
+        {
+            Debug.LogError($"Could not import connections CSV:\n" + $"{filePath}");
+            yield break;
+        }
+
+
+        // =====================================================
+        // FIND HEADER INDICES
+        // =====================================================
+
+        string[] dataHeaders = dataValues[0];
+
+
+        int node1IDIndex = Array.IndexOf(dataHeaders, TransformerConnectionsFromHeading);
+
+
+        int node2IDIndex = Array.IndexOf(dataHeaders, TransformerConnectionsToHeading);
+
+        //These headings below are the same as in the lines files for edges
+        int transformerIDIndex = Array.IndexOf(dataHeaders, ConnectionsEdgeIDHeading); 
+
+
+        int inServiceIndex = Array.IndexOf(dataHeaders, ConnectionsInServiceHeading);
+
+
+        int maxLoadIndex = Array.IndexOf(dataHeaders, ConnectionsMaxLoadHeading);
+
+
+        // Validate header indices
+        if (!ValidateColumnIndex(node1IDIndex, TransformerConnectionsFromHeading, filePath) ||
+            !ValidateColumnIndex(node2IDIndex, TransformerConnectionsToHeading, filePath) ||
+            !ValidateColumnIndex(transformerIDIndex, ConnectionsEdgeIDHeading, filePath) ||
+            !ValidateColumnIndex(inServiceIndex, ConnectionsInServiceHeading, filePath) ||
+            !ValidateColumnIndex(maxLoadIndex, ConnectionsMaxLoadHeading, filePath))
+        {
+            yield break;
+        }
+
+
+        // =====================================================
+        // IMPORT EACH CONNECTION
+        // =====================================================
+
+        for (int i = 1; i < dataValues.Count; i++)
+        {
+            string node1ID = dataValues[i][node1IDIndex];
+
+            string node2ID = dataValues[i][node2IDIndex];
+
+
+            string transformerID = "t_" + dataValues[i][transformerIDIndex];
+
+
+            bool inService = bool.Parse(dataValues[i][inServiceIndex]);
+
+
+            float maxLoad = ParseFloat(dataValues[i][maxLoadIndex]);
+
+            Node node1 = ImportNode(node1ID);
+
+
+            Node node2 = ImportNode(node2ID);
+
+
+            ImportEdge(transformerID, inService, maxLoad, node1, node2);
         }
 
 
@@ -824,6 +924,94 @@ public class DataImporter : MonoBehaviour
 
             Debug.Log(
                 $"Imported edge data for timestep {time}."
+            );
+        }
+    }
+
+    private IEnumerator ImportHourTransformerData()
+    {
+        for (int time = 0; time < TimeRange; time++)
+        {
+            TimeSpan currentTime = TimeSpan.FromHours(time);
+
+            string filename = GetDataFilePath($"ieee118_hour_{time}_transfo.csv");
+
+            List<string[]> dataValues = null;
+
+            // Load CSV asynchronously
+            yield return StartCoroutine(
+                _csvReader.ReadCSVFile(
+                    filename,
+                    result =>
+                    {
+                        dataValues = result;
+                    }
+                )
+            );
+
+
+            if (dataValues == null || dataValues.Count == 0)
+            {
+                Debug.LogError($"Could not import edge CSV:\n" + $"{filename}");
+
+                yield break;
+            }
+
+
+            // =================================================
+            // FIND HEADER INDICES
+            // =================================================
+
+            string[] dataHeaders = dataValues[0];
+
+            int transformerIDIndex = Array.IndexOf(dataHeaders, TransformerIDHeading);
+            int loadPercentIndex = Array.IndexOf(dataHeaders, TransformerLoadHeading);
+            int powerFromIndex = Array.IndexOf(dataHeaders, TransformerPowerFromHeading);
+            int powerToIndex = Array.IndexOf(dataHeaders, TransformerPowerToHeading);
+
+
+            if (!ValidateColumnIndex(transformerIDIndex, TransformerIDHeading, filename) ||
+                !ValidateColumnIndex(loadPercentIndex, TransformerLoadHeading, filename) ||
+                !ValidateColumnIndex(powerFromIndex, TransformerPowerFromHeading, filename) ||
+                !ValidateColumnIndex(powerToIndex, TransformerPowerToHeading, filename))
+            {
+                yield break;
+            }
+
+
+            // =================================================
+            // IMPORT EACH TRANSFORMER
+            // =================================================
+
+            for (int i = 1; i < dataValues.Count; i++)
+            {
+                string transformerID = "t_" + dataValues[i][transformerIDIndex];
+
+                if (!Graph.Edges.TryGetValue(transformerID, out Edge edge))
+                {
+                    Debug.LogError($"Transformer with ID '{transformerID}' " + $"was found in {filename}, " + $"but was not imported from " + $"ieee118_lines.csv.");
+                    continue;
+                }
+
+
+                float load = ParseFloat(dataValues[i][loadPercentIndex]);
+
+
+                float powerFrom = ParseFloat(dataValues[i][powerFromIndex]);
+
+
+                float powerTo = ParseFloat(dataValues[i][powerToIndex]);
+
+
+                EdgeSnapshot dataSnapshot = new EdgeSnapshot(load, powerFrom, powerTo);
+
+
+                edge.DataSnapshots[currentTime] = dataSnapshot;
+            }
+
+
+            Debug.Log(
+                $"Imported transformer data for timestep {time}."
             );
         }
     }
