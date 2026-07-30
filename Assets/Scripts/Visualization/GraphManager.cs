@@ -87,6 +87,14 @@ public class GraphManager : MonoBehaviour
         }
     }
 
+    private string GetEdgePairKey(Edge edge)
+    {
+        string a = edge.Node1.Id;
+        string b = edge.Node2.Id;
+
+        return a.CompareTo(b) <= 0 ? $"{a}-{b}" : $"{b}-{a}";
+    }
+
     IEnumerator InstantiateGraph()
     {
         GameObject visualization = new GameObject("_____VISUALIZATION____");
@@ -133,16 +141,24 @@ public class GraphManager : MonoBehaviour
         edgeParent.transform.SetParent(graphParent.transform);
         int count = 0;
 
-        foreach (Edge edge in _graphData.Edges.Values)
-        {
-            GameObject edgeObject = Instantiate(edgePrefab, edgeParent.transform); 
-            edgeObject.name = "Edge_" + edge.Id;
+        var groupedEdges = _graphData.Edges.Values.GroupBy(e => GetEdgePairKey(e)).ToList();
 
-            EdgeVisualizer visualizer = edgeObject.GetComponent<EdgeVisualizer>();
-            visualizer.Initialize(edge, timeStep, index,  _layout, _style, edgeMaterial);
-            _edgeVisualizers.Add(visualizer);
-            count++;
-            if (count % 20 == 0)yield return null; //Pause 1 frame every 20 edges
+        foreach (var group in groupedEdges)
+        {
+            int groupIndex = 0;
+            foreach (Edge edge in group)
+            {
+                GameObject edgeObject = Instantiate(edgePrefab, edgeParent.transform); 
+                edgeObject.name = "Edge_" + edge.Id;
+
+                EdgeVisualizer visualizer = edgeObject.GetComponent<EdgeVisualizer>();
+                visualizer.Initialize(edge, timeStep, index,  _layout, _style, edgeMaterial, groupIndex, group.Count()); //
+                _edgeVisualizers.Add(visualizer);
+                count++;
+                if (count % 20 == 0)yield return null; //Pause 1 frame every 20 edges
+
+                groupIndex++;
+            }
 
         }
     }

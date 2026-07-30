@@ -22,8 +22,12 @@ public class EdgeVisualizer : MonoBehaviour
 
     private GameObject directionArrow;
 
+    private int _bundleIndex;
+    private int _bundleSize;
+    private float _offset;
 
-    public void Initialize(Edge data,TimeSpan time, int timeStepIndex, GraphLayout layout, GraphStyle style, Material edgeMaterial)
+
+    public void Initialize(Edge data,TimeSpan time, int timeStepIndex, GraphLayout layout, GraphStyle style, Material edgeMaterial, int bundleIndex, int bundleSize)
     { 
         Edge = data;
         Time = time;
@@ -32,6 +36,9 @@ public class EdgeVisualizer : MonoBehaviour
         _style = style; 
         
         TimeStepIndex = timeStepIndex;
+
+        _bundleIndex = bundleIndex;
+        _bundleSize = bundleSize;
 
 
         startPosition = layout.GetNodePosition(Edge.Node1.Id, time);
@@ -75,9 +82,11 @@ public class EdgeVisualizer : MonoBehaviour
         // Set the number of vertices
         lineRenderer.positionCount = 2;
 
+        //Offset for when node pairs have multiple connections
+        Vector3 offset = CalculateOffset();
         // Set the positions of the vertices
-        lineRenderer.SetPosition(0, startPosition);
-        lineRenderer.SetPosition(1, endPosition);
+        lineRenderer.SetPosition(0, startPosition + offset);
+        lineRenderer.SetPosition(1, endPosition + offset);
 
             
     } 
@@ -86,8 +95,10 @@ public class EdgeVisualizer : MonoBehaviour
     {
         startPosition = _layout.GetNodePosition(Edge.Node1.Id, Time);
         endPosition = _layout.GetNodePosition(Edge.Node2.Id, Time);
-        lineRenderer.SetPosition(0, startPosition);
-        lineRenderer.SetPosition(1, endPosition);
+
+        Vector3 offset = CalculateOffset();
+        lineRenderer.SetPosition(0, startPosition + offset);
+        lineRenderer.SetPosition(1, endPosition + offset);
     }
 
     public void RefreshWidth()
@@ -192,13 +203,36 @@ public class EdgeVisualizer : MonoBehaviour
         float nodeRadius = Mathf.Max(nodeSize * 0.5f, 0.05f);
 
         float offset = nodeRadius + tipDistance;
+        Vector3 edgeOffset = CalculateOffset();
 
-        directionArrow.transform.position = nodePosition - direction * offset;
+        directionArrow.transform.position = (nodePosition - direction * offset) - edgeOffset;
         directionArrow.transform.rotation = Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0);
 
     }
     
+    private Vector3 CalculateOffset()
+    {
+        //if there is only one edge, there is no offset
+        if (_bundleSize<=1) 
+        {
+            return Vector3.zero;
+        }
 
+        Vector3 direction = (endPosition - startPosition);
+        if (direction == Vector3.zero)
+        {
+            return Vector3.zero;
+        }
+
+        direction = Vector3.ProjectOnPlane(direction, Vector3.up).normalized;
+        Vector3 perpendicular = Vector3.Cross(direction, Vector3.up).normalized;
+
+        float spacing = 0.2f;
+        float offsetAmount = (_bundleIndex - (_bundleSize - 1) / 2f) * spacing;
+
+        return perpendicular * offsetAmount;
+        
+    }
 
     
 }
