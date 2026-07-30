@@ -1680,6 +1680,8 @@ MonoBehaviour:
   ConnectionsEdgeIDHeading: 
   ConnectionsInServiceHeading: in_service
   ConnectionsMaxLoadHeading: max_loading_percent
+  TransformerConnectionsFromHeading: hv_bus
+  TransformerConnectionsToHeading: lv_bus
   NodePowerHeading: p_mw
   NodeAngleHeading: va_degree
   NodeIDHeading: 
@@ -1687,6 +1689,10 @@ MonoBehaviour:
   EdgeLoadHeading: loading_percent
   EdgePowerFromHeading: p_from_mw
   EdgePowerToHeading: p_to_mw
+  TransformerIDHeading: 
+  TransformerLoadHeading: loading_percent
+  TransformerPowerFromHeading: p_hv_mw
+  TransformerPowerToHeading: p_lv_mw
 --- !u!114 &585109296
 MonoBehaviour:
   m_ObjectHideFlags: 0
