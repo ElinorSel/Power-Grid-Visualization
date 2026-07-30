@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using Unity.GraphToolkit.Editor;
 
 
 //This class stores the current locations for the Nodes during the viz. 

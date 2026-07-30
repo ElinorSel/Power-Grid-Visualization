@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using UnityEditor.ShaderGraph.Internal;
 
 public class VisualizationSettings : MonoBehaviour
 {
