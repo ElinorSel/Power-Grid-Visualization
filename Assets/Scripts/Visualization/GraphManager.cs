@@ -362,6 +362,7 @@ public class GraphManager : MonoBehaviour
         List<TimeSpan> visibleTimeSteps = GetVisibleTimeSteps();
         UpdateTimeStepVisibility();
         _layout.UpdateHeightPositions(visibleTimeSteps);
+        RefreshLayoutVisualizers();
     }
 
 }
