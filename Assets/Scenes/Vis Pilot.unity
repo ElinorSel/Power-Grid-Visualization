@@ -1673,7 +1673,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataImporter
   makeDebugFiles: 0
-  TimeRange: 24
+  TimeRange: 10
   dataFolderName: Data
   ConnectionsFromHeading: from_bus
   ConnectionsToHeading: to_bus
@@ -4125,7 +4125,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 242963997}
   m_Direction: 0
   m_MinValue: 0.01
-  m_MaxValue: 4
+  m_MaxValue: 6
   m_WholeNumbers: 0
   m_Value: 1
   m_OnValueChanged:
@@ -4227,9 +4227,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1185782757}
   m_Direction: 0
   m_MinValue: 0.01
-  m_MaxValue: 0.2
+  m_MaxValue: 0.7
   m_WholeNumbers: 0
-  m_Value: 0.08
+  m_Value: 0.2
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:

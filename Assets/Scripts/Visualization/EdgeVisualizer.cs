@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using Unity.Mathematics;
 
 public class EdgeVisualizer : MonoBehaviour
 {
@@ -195,7 +196,8 @@ public class EdgeVisualizer : MonoBehaviour
             return;
         }
 
-        float width = _style.GetEdgeWidth(Edge, Time);
+        float width = math.clamp(_style.GetEdgeWidth(Edge, Time),0f,0.2f);
+
         directionArrow.transform.localScale = new Vector3 (4*width, 5*width, 4*width);
 
         float tipDistance = Vector3.Dot(arrowTip.position - directionArrow.transform.position, direction);

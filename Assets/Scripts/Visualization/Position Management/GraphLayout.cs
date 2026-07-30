@@ -73,27 +73,29 @@ public class GraphLayout
             timesToProcess.AddRange(_graph.TimeSteps);
         }
 
-        float ceiling = 30;
-        float floor = 0;
+        // Slider (TimeStepZSize) sets the total vertical span.
+        // Layers use flexbox-style space-between: first at floor, last at ceiling.
+        float floor = 0f;
+        float ceiling = VisualizationSettings.Instance.TimeStepZSize;
+        float availableSpace = ceiling - floor;
+        int layerCount = timesToProcess.Count;
 
-        float availibleSpace = ceiling - floor;
-
-        float spacePerTimestep = availibleSpace / timesToProcess.Count;
-
-        for (int timestep = 0; timestep < timesToProcess.Count; timestep++)
+        for (int timestep = 0; timestep < layerCount; timestep++)
         {
-            TimeSpan time = timesToProcess[timestep]; //get the timespan related to that timestep index
+            TimeSpan time = timesToProcess[timestep];
+
+            float baseHeight = (layerCount == 1)
+                ? floor
+                : floor + availableSpace * timestep / (layerCount - 1);
 
             foreach (Node node in _graph.Nodes.Values)
             {
                 NodeSnapshot snapshot = node.DataSnapshots[time];
 
-                float equalSpacing = spacePerTimestep * timestep; //decides that each timestep should be placed depending on a max distance
-                float overrideEqualSpacing = VisualizationSettings.Instance.TimeStepZSize; //* timestep; //TODO: keep? overrides the automatic spacing
-                float height = overrideEqualSpacing * (equalSpacing +
-                               GetNodeHeight(snapshot) *
-                               VisualizationSettings.Instance.NodeHeightScaleFactor);
-                
+                float height = baseHeight +
+                    GetNodeHeight(snapshot) *
+                    VisualizationSettings.Instance.NodeHeightScaleFactor;
+
                 UnityEngine.Vector3 pos = NodePositions[(node.Id, time)];
                 pos.y = height;
 
