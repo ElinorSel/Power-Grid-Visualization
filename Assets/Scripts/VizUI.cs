@@ -5,12 +5,18 @@ public class VizUI : MonoBehaviour
 {
     [SerializeField] TMP_Text minLabel;
     [SerializeField] TMP_Text maxLabel;
+
    public void ToggleLabels()
     {
         Debug.Log("VIZ UI: trying to sett labels to " + !VisualizationSettings.Instance.ShowLabels);
         VisualizationSettings.Instance.SetShowLabels(!VisualizationSettings.Instance.ShowLabels);
     }
 
+    public void ToggleHideLowLoad()
+    {
+        VisualizationSettings.Instance.SetHideLowLoad(!VisualizationSettings.Instance.HideLowLoad);
+        
+    }
     public void SetLayoutInitial()
     {
         VisualizationSettings.Instance.SetNodeLayoutAlgorithm(

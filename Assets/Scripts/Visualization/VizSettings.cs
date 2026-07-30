@@ -11,6 +11,7 @@ public class VisualizationSettings : MonoBehaviour
     public event Action OnEdgeWidthChanged;
     public event Action OnEdgeColorChanged;
     public event Action OnTimeRangeChanged;
+    public event Action OnHideLowLoadChanged;
     public static VisualizationSettings Instance { get; private set; }
 
     public enum NodeHeightMappingOption
@@ -57,6 +58,10 @@ public class VisualizationSettings : MonoBehaviour
     [Header("General Settings")]
     [SerializeField]
     private bool showLabels = true;
+
+    [SerializeField]
+    private bool hideLowLoad = false;
+
     [SerializeField]
     [Tooltip("How tall each timeStep slice is")]
      private float timeStepZSize;
@@ -117,6 +122,8 @@ public class VisualizationSettings : MonoBehaviour
     public EdgeColorMappingOption EdgeColorMapping => edgeColorMapping;
     public EdgeWidthMappingOption EdgeWidthMapping => edgeWidthMapping;
     public bool ShowLabels => showLabels;
+
+    public bool HideLowLoad => hideLowLoad;
     public float NodeHeightScaleFactor => nodeHeightScaleFactor;
     public float NodeSizeScaleFactor => nodeSizeScaleFactor;
     public float TimeStepZSize => timeStepZSize;
@@ -180,6 +187,18 @@ public class VisualizationSettings : MonoBehaviour
         
         showLabels = show;
         OnLabelSettingsChanged?.Invoke();
+    }
+
+    public void SetHideLowLoad(bool hide)
+    {
+        if (hideLowLoad == hide)
+        {
+            Debug.Log("VIZ settings: value is the same as before, returning...");
+            return;
+        }
+
+        hideLowLoad = hide;
+        OnHideLowLoadChanged?.Invoke();
     }
 
     public void SetHeightScaleFactor(float scaleFactor)

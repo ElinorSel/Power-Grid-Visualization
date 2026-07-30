@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using System.Collections;
 using System.Linq;
+using System.Reflection.Metadata;
 
 public class GraphManager : MonoBehaviour
 {
@@ -36,6 +37,7 @@ public class GraphManager : MonoBehaviour
         VisualizationSettings.Instance.OnEdgeWidthChanged += HandleEdgeWidthChanged;
         VisualizationSettings.Instance.OnEdgeColorChanged += HandleEdgeColorChanged;
         VisualizationSettings.Instance.OnTimeRangeChanged += HandleTimeRangeChanged;
+        VisualizationSettings.Instance.OnHideLowLoadChanged += HandleHideLowLoadChanged;
         Debug.Log("Subscribed to label event");
     }
     private void OnDestroy()
@@ -50,6 +52,7 @@ public class GraphManager : MonoBehaviour
         VisualizationSettings.Instance.OnEdgeWidthChanged -= HandleEdgeWidthChanged;
         VisualizationSettings.Instance.OnEdgeColorChanged -= HandleEdgeColorChanged;
         VisualizationSettings.Instance.OnTimeRangeChanged -= HandleTimeRangeChanged;
+        VisualizationSettings.Instance.OnHideLowLoadChanged -= HandleHideLowLoadChanged;
     }
 
     /*
@@ -319,6 +322,15 @@ public class GraphManager : MonoBehaviour
         foreach(var node in _nodeVisualizers)
         {
             node.RefreshLabel();
+        }
+    }
+
+    private void HandleHideLowLoadChanged()
+    {
+        foreach(var edge in _edgeVisualizers)
+        {
+            edge.RefreshWidth();
+            edge.RefreshDirectionArrow();
         }
     }
 

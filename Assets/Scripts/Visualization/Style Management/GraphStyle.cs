@@ -53,9 +53,13 @@ public class GraphStyle
     //______EDGE SETTINGS_____
     public float GetEdgeWidth(Edge edge, TimeSpan time)
     {
+        if (!VisualizationSettings.Instance.HideLowLoad && edge.DataSnapshots.TryGetValue(time, out EdgeSnapshot snapshot) && snapshot.Load < 1f)
+        {
+            return 0.01f;
+        }
         // [Width Settings]
         switch (VisualizationSettings.Instance.EdgeWidthMapping)
-        {
+        {   
             case VisualizationSettings.EdgeWidthMappingOption.None:
                 return VisualizationSettings.Instance.EdgeWidthScaleFactor; 
             case VisualizationSettings.EdgeWidthMappingOption.MVALimit:
