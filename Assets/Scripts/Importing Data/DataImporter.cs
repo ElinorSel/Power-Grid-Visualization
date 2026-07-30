@@ -354,12 +354,19 @@ public class DataImporter : MonoBehaviour
             i < dataValues.Count;
             i++)
         {
-            string node1ID =
-                dataValues[i][node1IDIndex];
+            string node1ID = dataValues[i][node1IDIndex];
+
+            //int node1IDINT = int.Parse(node1ID); //the data had wrong indicies so we add +1
+            //node1IDINT++;
+            //node1ID = node1IDINT.ToString();
 
 
-            string node2ID =
-                dataValues[i][node2IDIndex];
+            string node2ID = dataValues[i][node2IDIndex];
+
+            //int node2IDINT = int.Parse(node2ID); //the data had wrong indicies so we add +1
+            //node2IDINT++;
+            //node2ID = node1IDINT.ToString();
+
 
 
             string edgeID =
@@ -586,13 +593,15 @@ public class DataImporter : MonoBehaviour
             // IMPORT EACH NODE
             // =================================================
 
-            for (
-                int i = 1;
-                i < dataValues.Count;
-                i++)
+            for (int i = 1;i < dataValues.Count;i++)
             {
                 string nodeID =
                     dataValues[i][nodeIDIndex];
+                //int nodeIDINT = int.Parse(nodeID); //the data had wrong indicies so we add +1
+                //nodeIDINT++;
+                //nodeID = nodeIDINT.ToString();
+
+            
 
 
                 Node node =

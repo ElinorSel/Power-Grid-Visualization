@@ -46,7 +46,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ColorPalette:
-        m_Texture: {fileID: 2800000, guid: 4bb542083cece874bb81a810169c51a6, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9ba006ba8613c1849b5fd934e0051840, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -113,7 +113,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
-    - _EdgeLoad: 0
+    - _EdgeLoad: -1.57
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
     - _Glossiness: 0

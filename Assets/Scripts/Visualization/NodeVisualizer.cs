@@ -40,8 +40,15 @@ public class NodeVisualizer : MonoBehaviour
          _renderer = GetComponent<MeshRenderer>();
          RefreshNodeColor(); //set color based on vAngle
 
+        
+
         // [Show Labels]
-        nodeIDLabel.text = "Node_" + Node.Id;
+        //Node ID Label needs +1 because the node ID is 0-indexed but the label is 1-indexed
+        int nodeIDINT = int.Parse(Node.Id); //the data had wrong indicies so we add +1
+        nodeIDINT++;
+        string nodeID = nodeIDINT.ToString();
+
+        nodeIDLabel.text = "" + nodeID;
         nodeIDLabelGO.SetActive(VisualizationSettings.Instance.ShowLabels);
 
     }
