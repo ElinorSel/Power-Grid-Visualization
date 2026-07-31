@@ -74,7 +74,7 @@ public class GraphStyle
     {
         if (edgeSnapshot.Load<1)
         {
-           return 0; 
+           return 0.05f; 
         }
         return  Mathf.Clamp01(edgeSnapshot.Load/5); //TODO: should normalize from 0 to 1 insead of clamp
     }
