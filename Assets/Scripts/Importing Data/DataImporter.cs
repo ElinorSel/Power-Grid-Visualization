@@ -175,6 +175,20 @@ public class DataImporter : MonoBehaviour
         );
 
         // =====================================================
+        // 4. IMPORT COORDINATE DATA
+        // =====================================================
+
+        yield return StartCoroutine(
+            ImportCordinateData()
+        );
+
+
+        Debug.Log(
+            "Node Coordinate data imported successfully."
+        );
+        
+
+        // =====================================================
         // 5. CREATE DEBUG FILES
         // =====================================================
 
@@ -1234,4 +1248,88 @@ public class DataImporter : MonoBehaviour
             $"{debugDirectory}"
         );
     }
+
+
+    //=========================================================
+    // Coordinate loading
+    //========================================================
+
+     private IEnumerator ImportCordinateData()
+    {
+         string filename = GetDataFilePath($"node_coordinates.csv");
+            List<string[]> dataValues = null;
+
+            // Load CSV asynchronously
+            yield return StartCoroutine(
+                _csvReader.ReadCSVFile(
+                    filename,
+                    result =>
+                    {
+                        dataValues = result;
+                    }
+                )
+            );
+
+
+            if (dataValues == null ||
+                dataValues.Count == 0)
+            {
+                Debug.LogError(
+                    $"Could not import node CSV:\n" +
+                    $"{filename}"
+                );
+
+                yield break;
+            }
+
+
+            // =================================================
+            // FIND HEADER INDICES
+            // =================================================
+
+            string[] dataHeaders = dataValues[0];
+
+            int nodeIDIndex =
+                Array.IndexOf(dataHeaders,
+                    "id" //TODO: hardcoded these, can be serialized if future work needs it :)
+                );
+
+
+            int xIndex =Array.IndexOf(dataHeaders,"x");
+
+
+            int yIndex =Array.IndexOf(dataHeaders,"y");
+
+            for (int time = 0;time < TimeRange;time++)
+            {
+                TimeSpan currentTime = TimeSpan.FromHours(time);
+            // =================================================
+            // IMPORT EACH NODE
+            // =================================================
+
+            for (int i = 1;i < dataValues.Count;i++)
+            {
+                int nodeID = int.Parse(
+                    dataValues[i][nodeIDIndex]
+                ) -1;
+
+                float x =
+                    ParseFloat(
+                        dataValues[i][xIndex]
+                    );
+                float y =
+                    ParseFloat(
+                        dataValues[i][yIndex]
+                    );
+
+                Graph.Nodes[nodeID.ToString()].DataSnapshots[currentTime].Coordinates = new Vector2(x/100,y/100);
+
+            }
+
+            Debug.Log(
+                $"Imported node data for timestep {time}."
+            );
+        }
+    }
+
 }
