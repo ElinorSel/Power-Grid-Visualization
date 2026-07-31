@@ -1769,6 +1769,10 @@ MonoBehaviour:
   TransformerLoadHeading: loading_percent
   TransformerPowerFromHeading: p_hv_mw
   TransformerPowerToHeading: p_lv_mw
+  GeneratorNodeIDHeading: bus
+  GeneratorTypeHeading: type
+  GeneratorPowerHeading: p_mw
+  GeneratorMaxPowerHeading: max_p_mw
 --- !u!114 &585109296
 MonoBehaviour:
   m_ObjectHideFlags: 0

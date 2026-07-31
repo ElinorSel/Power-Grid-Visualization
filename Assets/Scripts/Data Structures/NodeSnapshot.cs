@@ -8,6 +8,8 @@ public class NodeSnapshot
     
     public float ZOffset {get; set;} //not from data CSV and is soley for vixualization purposes, to offset the node in the z direction based on its voltage angle
 
+    //for generators
+    public GeneratorSnapshot GeneratorData { get; set; }
     public NodeSnapshot(float power, float vAngle)
     {
         this.Power = power;

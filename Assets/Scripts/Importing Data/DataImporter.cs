@@ -60,6 +60,15 @@ public class DataImporter : MonoBehaviour
     [SerializeField] private string TransformerPowerToHeading;
 
 
+    [Header("Generator CSV Headers")]
+
+    [SerializeField] private string GeneratorNodeIDHeading;
+    [SerializeField] private string GeneratorTypeHeading;
+    [SerializeField] private string GeneratorPowerHeading;
+    [SerializeField] private string GeneratorMaxPowerHeading;
+
+
+
 
     // =========================================================
     // DATA
@@ -68,6 +77,7 @@ public class DataImporter : MonoBehaviour
     public GraphData Graph { get; private set; } = new GraphData();
 
     private CSVReader _csvReader;
+
 
 
     // =========================================================
@@ -186,10 +196,24 @@ public class DataImporter : MonoBehaviour
         Debug.Log(
             "Node Coordinate data imported successfully."
         );
-        
+
 
         // =====================================================
-        // 5. CREATE DEBUG FILES
+        // 5. IMPORT GENERATOR DATA
+        // =====================================================
+
+        yield return StartCoroutine(
+            ImportHourGeneratorData()
+        );
+
+        Debug.Log(
+            "Generator data imported successfully."
+        );
+        
+
+
+        // =====================================================
+        // 6. CREATE DEBUG FILES
         // =====================================================
 
         if (makeDebugFiles)
@@ -1328,6 +1352,109 @@ public class DataImporter : MonoBehaviour
 
             Debug.Log(
                 $"Imported node data for timestep {time}."
+            );
+        }
+    }
+
+
+    // =========================================================
+    // GENERATOR DATA
+    // =========================================================
+
+        private IEnumerator ImportHourGeneratorData()
+    {
+        for (int time = 0; time < TimeRange; time++)
+        {
+            TimeSpan currentTime = TimeSpan.FromHours(time);
+
+
+            string filename = GetDataFilePath($"ieee118_hour_{time}_generator.csv");
+
+
+            List<string[]> dataValues = null;
+
+
+            // Load CSV asynchronously
+            yield return StartCoroutine(
+                _csvReader.ReadCSVFile(
+                    filename,
+                    result =>
+                    {
+                        dataValues = result;
+                    }
+                )
+            );
+
+
+            if (dataValues == null || dataValues.Count == 0)
+            {
+                Debug.LogError(
+                    $"Could not import node CSV:\n" +
+                    $"{filename}"
+                );
+
+                yield break;
+            }
+
+
+            // =================================================
+            // FIND HEADER INDICES
+            // =================================================
+
+            string[] dataHeaders = dataValues[0];
+
+
+            int nodeIDIndex = Array.IndexOf(dataHeaders, GeneratorNodeIDHeading);
+            int typeIndex = Array.IndexOf(dataHeaders, GeneratorTypeHeading);
+            int powerIndex = Array.IndexOf(dataHeaders, GeneratorPowerHeading);
+            int maxPowerIndex = Array.IndexOf(dataHeaders, GeneratorMaxPowerHeading);
+
+
+            if (!ValidateColumnIndex(nodeIDIndex, GeneratorNodeIDHeading, filename) ||
+                !ValidateColumnIndex(typeIndex, GeneratorTypeHeading, filename) ||
+                !ValidateColumnIndex(powerIndex, GeneratorPowerHeading, filename) ||
+                !ValidateColumnIndex(maxPowerIndex, GeneratorMaxPowerHeading, filename))
+            {
+                yield break;
+            }
+
+
+            // =================================================
+            // IMPORT EACH Generator
+            // =================================================
+
+            for (int i = 1;i < dataValues.Count;i++)
+            {
+                string nodeID = dataValues[i][nodeIDIndex];
+                string generatorType = dataValues[i][typeIndex];
+
+                if (!Graph.Nodes.TryGetValue(nodeID, out Node node))
+                {
+                    Debug.LogWarning($"Generator references node '{nodeID}', but no such node exists.");
+                    continue;
+                }
+
+                if (!node.IsGenerator)
+                {
+                    node.IsGenerator = true;
+                    node.GeneratorType = generatorType;
+                }
+                if (!node.DataSnapshots.TryGetValue(currentTime, out NodeSnapshot nodeSnapshot))
+                {
+                    Debug.LogWarning($"Node '{nodeID}' has no snapshot for timestep {time}.");
+                    continue;
+                }
+
+                float power = ParseFloat(dataValues[i][powerIndex]);
+                float maxPower = ParseFloat(dataValues[i][maxPowerIndex]);
+
+                nodeSnapshot.GeneratorData = new GeneratorSnapshot(power, maxPower);
+
+            }
+
+
+            Debug.Log(
+                $"Imported generator data for timestep {time}."
             );
         }
     }
