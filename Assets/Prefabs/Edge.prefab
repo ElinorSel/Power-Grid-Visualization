@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EdgeVisualizer
   arrowPrefab: {fileID: 3907442627560680912, guid: 2a9cf8acca874614a825062b61954d32, type: 3}
+  _maxArrowWidth: 0.03
 --- !u!120 &7133381436047443875
 LineRenderer:
   serializedVersion: 3

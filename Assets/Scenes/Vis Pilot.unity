@@ -1811,10 +1811,10 @@ MonoBehaviour:
   nodeHeightScaleFactor: 0.05
   nodeColorMapping: 0
   nodeSizeMapping: 0
-  nodeSizeScaleFactor: 0.3
+  nodeSizeScaleFactor: 0.1
   edgeColorMapping: 0
   edgeWidthMapping: 0
-  edgeWidthScaleFactor: 0.08
+  edgeWidthScaleFactor: 0.04
 --- !u!1 &625910089
 GameObject:
   m_ObjectHideFlags: 0
@@ -4529,9 +4529,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1185782757}
   m_Direction: 0
   m_MinValue: 0.01
-  m_MaxValue: 0.2
+  m_MaxValue: 0.05
   m_WholeNumbers: 0
-  m_Value: 0.2
+  m_Value: 0.04
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -5673,6 +5673,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6900676903622151380, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_TranslateXSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6900676903622151380, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_TranslateYSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6900676903622151380, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_TranslateZSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6900676903622151380, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
+      propertyPath: m_BodyTranslateMultiplier
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8135023674665499069, guid: 58d0a4ac86f2348deb02f3880c71378e, type: 3}
       propertyPath: m_Name
       value: XR Interaction Simulator

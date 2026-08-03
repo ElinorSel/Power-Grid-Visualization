@@ -45,8 +45,7 @@ public class EdgeVisualizer : MonoBehaviour
         startPosition = layout.GetNodePosition(Edge.Node1.Id, time);
         endPosition = layout.GetNodePosition(Edge.Node2.Id, time);
         RenderEdge(style.GetEdgeWidth(Edge, time), edgeMaterial);
-        RenderDirectionArrow();  //TODO: add back again once fixxed
-        
+        RenderDirectionArrow();  
     }
 
     void RenderEdge(float edgeWidth, Material edgeMaterial)
@@ -206,7 +205,17 @@ public class EdgeVisualizer : MonoBehaviour
 
         float width = math.clamp(_style.GetEdgeWidth(Edge, Time),0f,_maxArrowWidth);
 
-        directionArrow.transform.localScale = new Vector3 (4*width, 5*width, 4*width);
+        float edgeDistance = Vector3.Distance(startPosition, endPosition);
+        const float closeDistanceThreshold = 0.5f;
+        const float closeArrowWidth = 0.02f;
+
+        if (edgeDistance < closeDistanceThreshold)
+        {
+            Debug.Log("Too small distance changing arrow " + Edge.Id);
+            width = Mathf.Min(width, closeArrowWidth);
+        }
+
+        directionArrow.transform.localScale = new Vector3 (4*width, 4*width, 4*width);
 
         float tipDistance = Vector3.Dot(arrowTip.position - directionArrow.transform.position, direction);
 
@@ -237,7 +246,7 @@ public class EdgeVisualizer : MonoBehaviour
         direction = Vector3.ProjectOnPlane(direction, Vector3.up).normalized;
         Vector3 perpendicular = Vector3.Cross(direction, Vector3.up).normalized;
 
-        float spacing = 0.2f;
+        float spacing = 0.05f;
         float offsetAmount = (_bundleIndex - (_bundleSize - 1) / 2f) * spacing;
 
         return perpendicular * offsetAmount;
