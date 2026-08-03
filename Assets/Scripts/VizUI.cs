@@ -17,6 +17,11 @@ public class VizUI : MonoBehaviour
         VisualizationSettings.Instance.SetHideLowLoad(!VisualizationSettings.Instance.HideLowLoad);
         
     }
+
+    public void ToggleGeneratorPower()
+    {
+        VisualizationSettings.Instance.SetShowGeneratorPower(!VisualizationSettings.Instance.ShowGeneratorPower);
+    }
     public void SetLayoutInitial()
     {
         VisualizationSettings.Instance.SetNodeLayoutAlgorithm(

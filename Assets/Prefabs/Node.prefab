@@ -406,3 +406,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NodeVisualizer
   nodeIDLabelGO: {fileID: 1836398480566308131}
   nodeIDLabel: {fileID: 2056768344170136327}
+  generatorCylinderPrefab: {fileID: 3941750553058985171, guid: 30b5072fae07c594fb089762762624ee, type: 3}
+  maxPowerMaterial: {fileID: 2100000, guid: f8b8aa930ee4f4b4398021dac191eb6a, type: 2}
+  currentPowerMaterial: {fileID: 2100000, guid: ea434b81e109e9d4fb2c9ba146347eda, type: 2}

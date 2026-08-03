@@ -38,6 +38,7 @@ public class GraphManager : MonoBehaviour
         VisualizationSettings.Instance.OnEdgeColorChanged += HandleEdgeColorChanged;
         VisualizationSettings.Instance.OnTimeRangeChanged += HandleTimeRangeChanged;
         VisualizationSettings.Instance.OnHideLowLoadChanged += HandleHideLowLoadChanged;
+        VisualizationSettings.Instance.OnShowGeneratorPowerChanged += HandleGeneratorPowerToggle;
         Debug.Log("Subscribed to label event");
     }
     private void OnDestroy()
@@ -53,6 +54,7 @@ public class GraphManager : MonoBehaviour
         VisualizationSettings.Instance.OnEdgeColorChanged -= HandleEdgeColorChanged;
         VisualizationSettings.Instance.OnTimeRangeChanged -= HandleTimeRangeChanged;
         VisualizationSettings.Instance.OnHideLowLoadChanged -= HandleHideLowLoadChanged;
+        VisualizationSettings.Instance.OnShowGeneratorPowerChanged -= HandleGeneratorPowerToggle;
     }
 
     /*
@@ -332,6 +334,15 @@ public class GraphManager : MonoBehaviour
             edge.RefreshWidth();
             edge.RefreshDirectionArrow();
         }
+    }
+
+    private void HandleGeneratorPowerToggle()
+    {
+        foreach(var node in _nodeVisualizers)
+        {
+
+            node.ShowGeneratorPower(VisualizationSettings.Instance.ShowGeneratorPower);
+        } 
     }
 
     private void HandleNodeSizeChanged()

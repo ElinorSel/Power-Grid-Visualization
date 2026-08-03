@@ -12,6 +12,7 @@ public class VisualizationSettings : MonoBehaviour
     public event Action OnEdgeColorChanged;
     public event Action OnTimeRangeChanged;
     public event Action OnHideLowLoadChanged;
+    public event Action OnShowGeneratorPowerChanged;
     public static VisualizationSettings Instance { get; private set; }
 
     public enum NodeHeightMappingOption
@@ -61,6 +62,9 @@ public class VisualizationSettings : MonoBehaviour
 
     [SerializeField]
     private bool hideLowLoad = false;
+
+    [SerializeField]
+    private bool showGeneratorPower = false;
 
     [SerializeField]
     [Tooltip("How tall each timeStep slice is")]
@@ -124,6 +128,7 @@ public class VisualizationSettings : MonoBehaviour
     public bool ShowLabels => showLabels;
 
     public bool HideLowLoad => hideLowLoad;
+    public bool ShowGeneratorPower => showGeneratorPower;
     public float NodeHeightScaleFactor => nodeHeightScaleFactor;
     public float NodeSizeScaleFactor => nodeSizeScaleFactor;
     public float TimeStepZSize => timeStepZSize;
@@ -199,6 +204,18 @@ public class VisualizationSettings : MonoBehaviour
 
         hideLowLoad = hide;
         OnHideLowLoadChanged?.Invoke();
+    }
+
+public void SetShowGeneratorPower(bool show)
+    {
+        if (showGeneratorPower == show)
+        {
+            Debug.Log("VIZ settings: value is the same as before, returning...");
+            return;
+        }
+
+        showGeneratorPower = show;
+        OnShowGeneratorPowerChanged?.Invoke();
     }
 
     public void SetHeightScaleFactor(float scaleFactor)
