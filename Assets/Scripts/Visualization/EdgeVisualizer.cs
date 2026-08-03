@@ -16,6 +16,7 @@ public class EdgeVisualizer : MonoBehaviour
 
     private LineRenderer lineRenderer;
     [SerializeField] private GameObject arrowPrefab;
+    [SerializeField] private float _maxArrowWidth = 0.05f;
     private Transform arrowTip;
 
     private GraphLayout _layout;
@@ -41,7 +42,6 @@ public class EdgeVisualizer : MonoBehaviour
         _bundleIndex = bundleIndex;
         _bundleSize = bundleSize;
 
-
         startPosition = layout.GetNodePosition(Edge.Node1.Id, time);
         endPosition = layout.GetNodePosition(Edge.Node2.Id, time);
         RenderEdge(style.GetEdgeWidth(Edge, time), edgeMaterial);
@@ -51,11 +51,8 @@ public class EdgeVisualizer : MonoBehaviour
 
     void RenderEdge(float edgeWidth, Material edgeMaterial)
     {
-
-
         // Add a LineRenderer component
         lineRenderer = gameObject.GetComponent<LineRenderer>();
-
         lineRenderer.useWorldSpace = true;
 
         // Set the material
@@ -67,7 +64,19 @@ public class EdgeVisualizer : MonoBehaviour
 
         lineRenderer.GetPropertyBlock(_propertyBlock);
 
+        //Set EDGE COLOR - controlled by  the float value on the material
         _propertyBlock.SetFloat("_EdgeLoad", _style.GetEdgeLoad(Edge.DataSnapshots[Time]));
+
+        //Set direction of pulse 
+        if(Edge.DataSnapshots[Time].Direction>0){
+            _propertyBlock.SetFloat("_Direction", 1f);
+        }
+        else if(Edge.DataSnapshots[Time].Direction<0){
+            _propertyBlock.SetFloat("_Direction", -1f);
+        }
+        else{
+            Debug.LogWarning("Edge"+ Edge.Id + " has no direction");
+        }
 
         lineRenderer.SetPropertyBlock(_propertyBlock);
 
@@ -88,7 +97,6 @@ public class EdgeVisualizer : MonoBehaviour
         // Set the positions of the vertices
         lineRenderer.SetPosition(0, startPosition + offset);
         lineRenderer.SetPosition(1, endPosition + offset);
-
             
     } 
 
@@ -120,7 +128,6 @@ public class EdgeVisualizer : MonoBehaviour
         //TODO: idk if the direction is correct
         if (Edge.DataSnapshots[Time].Direction>0) //flowing from Node1 to Node2 
         {
-    
             Vector3 direction = (endPosition - startPosition).normalized;
 
             directionArrow = Instantiate(arrowPrefab, endPosition, Quaternion.LookRotation(direction)*Quaternion.Euler(90,0,0), transform);
@@ -129,6 +136,7 @@ public class EdgeVisualizer : MonoBehaviour
             Vector3 nodePosition = endPosition;
             float nodeSize = _style.GetNodeSize(Edge.Node1, Time);
             UpdateDirectionArrow(nodePosition, direction, nodeSize);
+            
 
         }
 
@@ -196,7 +204,7 @@ public class EdgeVisualizer : MonoBehaviour
             return;
         }
 
-        float width = math.clamp(_style.GetEdgeWidth(Edge, Time),0f,0.2f);
+        float width = math.clamp(_style.GetEdgeWidth(Edge, Time),0f,_maxArrowWidth);
 
         directionArrow.transform.localScale = new Vector3 (4*width, 5*width, 4*width);
 
