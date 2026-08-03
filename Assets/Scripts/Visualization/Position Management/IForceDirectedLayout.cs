@@ -8,7 +8,7 @@ public class ForceDirectedLayout : INodeLayoutAlgorithm
     public bool IsSimulating => _temperature < 0.01f;
     private readonly Dictionary<string, Vector3> _displacements = new();
 
-    private const float IdealSpacing = 3f;
+    private const float IdealSpacing = 0.1f;
     private float _temperature = 1f;
 
    
