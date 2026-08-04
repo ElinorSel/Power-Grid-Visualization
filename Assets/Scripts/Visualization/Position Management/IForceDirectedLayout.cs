@@ -9,7 +9,7 @@ public class ForceDirectedLayout : INodeLayoutAlgorithm
     private readonly Dictionary<string, Vector3> _displacements = new();
 
     private const float IdealSpacing = 0.1f;
-    private float _temperature = 1f;
+    private float _temperature = 0.02f;
 
    
 
@@ -29,9 +29,9 @@ public class ForceDirectedLayout : INodeLayoutAlgorithm
 
                 positions[(node.Id, time)] =
                     new Vector3(
-                        snapshot.Coordinates.x,
+                        snapshot.Coordinates.x/1000,
                         0,
-                        snapshot.Coordinates.y);
+                        snapshot.Coordinates.y/1000);
             }
         }
 
