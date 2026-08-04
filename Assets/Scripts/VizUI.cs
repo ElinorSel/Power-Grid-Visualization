@@ -1,10 +1,12 @@
 using UnityEngine;
 using TMPro;
+using System.Runtime.Serialization;
 
 public class VizUI : MonoBehaviour
 {
     [SerializeField] TMP_Text minLabel;
     [SerializeField] TMP_Text maxLabel;
+    [SerializeField] GameObject hideBackground;
 
    public void ToggleLabels()
     {
@@ -85,6 +87,11 @@ public class VizUI : MonoBehaviour
         }
     }
 
+    public void HideSettings(bool show)
+    {
+        hideBackground.SetActive(!show);
+        
+    }
 
 
 }
