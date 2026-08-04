@@ -39,7 +39,7 @@ public class GraphManager : MonoBehaviour
         VisualizationSettings.Instance.OnTimeRangeChanged += HandleTimeRangeChanged;
         VisualizationSettings.Instance.OnHideLowLoadChanged += HandleHideLowLoadChanged;
         VisualizationSettings.Instance.OnShowGeneratorPowerChanged += HandleGeneratorPowerToggle;
-        Debug.Log("Subscribed to label event");
+       
     }
     private void OnDestroy()
     {
@@ -120,12 +120,13 @@ public class GraphManager : MonoBehaviour
         yield break;
     }
 
-    Debug.Log(
+    /*Debug.Log(
         $"Graph data loaded. " +
         $"Nodes: {_graphData.Nodes.Count}, " +
         $"Edges: {_graphData.Edges.Count}, " +
         $"Timesteps: {_graphData.TimeSteps.Count}"
     );
+    */
 
     // Initialize layout after data has finished loading
     _layout.Initialize(
