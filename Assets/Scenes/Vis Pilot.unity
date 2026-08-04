@@ -509,13 +509,13 @@ MonoBehaviour:
   visibleEndIndex: 0
   nodeLayoutAlgorithm: 1
   nodeHeightMapping: 1
-  nodeHeightScaleFactor: 0.05
-  nodeColorMapping: 0
+  nodeHeightScaleFactor: 0.0151
+  nodeColorMapping: 1
   nodeSizeMapping: 0
-  nodeSizeScaleFactor: 0.1
+  nodeSizeScaleFactor: 0.05
   edgeColorMapping: 0
   edgeWidthMapping: 0
-  edgeWidthScaleFactor: 0.04
+  edgeWidthScaleFactor: 0.0244
 --- !u!224 &625910094 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7407413569678359104, guid: 92d685352bfcb4fa788cdea75bf301ad, type: 3}
@@ -2366,7 +2366,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8806329115733545878, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 8806329115733545878, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2374,7 +2374,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8806329115733545878, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8806329115733545878, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_LocalRotation.w
