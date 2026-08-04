@@ -124,7 +124,7 @@ public class EdgeVisualizer : MonoBehaviour
 
     public void RenderDirectionArrow()
     {
-        //TODO: idk if the direction is correct
+
         if (Edge.DataSnapshots[Time].Direction>0) //flowing from Node1 to Node2 
         {
             Vector3 direction = (endPosition - startPosition).normalized;
@@ -207,11 +207,10 @@ public class EdgeVisualizer : MonoBehaviour
 
         float edgeDistance = Vector3.Distance(startPosition, endPosition);
         const float closeDistanceThreshold = 0.5f;
-        const float closeArrowWidth = 0.02f;
+        const float closeArrowWidth = 0.012f;
 
         if (edgeDistance < closeDistanceThreshold)
         {
-            Debug.Log("Too small distance changing arrow " + Edge.Id);
             width = Mathf.Min(width, closeArrowWidth);
         }
 
