@@ -13,6 +13,7 @@ public class NodeVisualizer : MonoBehaviour
     [SerializeField] private GameObject generatorCylinderPrefab;
     [SerializeField] private Material maxPowerMaterial;
     [SerializeField] private Material currentPowerMaterial;
+    [SerializeField] private Material loadMaterial;
 
     public Node Node {get; private set;}
     public NodeSnapshot Snapshot { get; private set; }
@@ -27,6 +28,9 @@ public class NodeVisualizer : MonoBehaviour
     private GameObject _generatorCurrentCylinder;
     private bool _generatorCylindersCreated => _generatorMaxCylinder != null && _generatorCurrentCylinder != null;
     private const float DefaultCylinderHeight = 2f;
+    private GameObject _loadCylinder;
+    private bool _loadCylindersCreated => _loadCylinder != null;
+    private float load;
     
 
 
@@ -99,18 +103,23 @@ public class NodeVisualizer : MonoBehaviour
 
     public void ShowGeneratorPower(bool show)
     {
-        if (!Node.IsGenerator)
-            return;
 
         if (show)
         {
-            CreateGeneratorCylinders();
-            UpdateGeneratorCylinders();
-            SetGeneratorCylindersVisible(true);
+            if(Node.IsGenerator)
+            {
+                CreateGeneratorCylinders();
+                UpdateGeneratorCylinders();
+            }
+            
+            CreateLoadCylinders();
+            UpdateLoadCylinders();
+
+            SetCylindersVisible(true);
         }
         else
         {
-            SetGeneratorCylindersVisible(false);
+            SetCylindersVisible(false);
         }
     }
 
@@ -148,8 +157,8 @@ public class NodeVisualizer : MonoBehaviour
         if (!_generatorCylindersCreated || Snapshot.GeneratorData == null)
         return;
 
-        float maxHeight = ConvertGeneratorPowerToHeight(Snapshot.GeneratorData.MaxPower);
-        float currentHeight = ConvertGeneratorPowerToHeight(Snapshot.GeneratorData.Power);
+        float maxHeight = ConvertPowerToHeight(Snapshot.GeneratorData.MaxPower);
+        float currentHeight = ConvertPowerToHeight(Snapshot.GeneratorData.Power);
 
         float maxScaleY = maxHeight * 0.5f;
         float currentScaleY = currentHeight * 0.5f;
@@ -167,18 +176,80 @@ public class NodeVisualizer : MonoBehaviour
         _generatorCurrentCylinder.transform.localPosition = new Vector3(0f, nodeOffset + bottomLocalY + currentHeight * 0.5f, 0f);
     }
 
-    private float ConvertGeneratorPowerToHeight(float powerValue)
+    private float ConvertPowerToHeight(float powerValue)
     {
         return Mathf.Clamp(powerValue * 0.01f, 0.05f, 2f);
     }
 
 
-    private void SetGeneratorCylindersVisible(bool visible)
+    private void SetCylindersVisible(bool visible)
     {
-        if (!_generatorCylindersCreated)
+        if (!_generatorCylindersCreated && _loadCylindersCreated)
+            return;
+        
+        if (_generatorCylindersCreated)
+        {
+            _generatorMaxCylinder.SetActive(visible);
+            _generatorCurrentCylinder.SetActive(visible);
+        }
+
+        if(_loadCylindersCreated)
+        {
+            _loadCylinder.SetActive(visible);
+        }
+    }
+
+    private void CreateLoadCylinders()
+    {
+        if (_loadCylindersCreated)
             return;
 
-        _generatorMaxCylinder.SetActive(visible);
-        _generatorCurrentCylinder.SetActive(visible);
+        //no load
+        if (Node.DataSnapshots[Time].Power == 0)
+            return;
+
+
+        _loadCylinder = Instantiate(generatorCylinderPrefab, transform);
+        _loadCylinder.name = "LoadCylinder";
+        Debug.Log("instantiated load" + _loadCylinder);
+
+        if (_loadCylinder.TryGetComponent<MeshRenderer>(out var loadRenderer) &&
+            loadMaterial != null)
+        {
+            loadRenderer.material = loadMaterial;
+        }
+
+        _loadCylinder.transform.localPosition = Vector3.zero;
+        
+    }
+
+    private void UpdateLoadCylinders()
+    {
+        if (!_loadCylindersCreated)
+            return;
+
+        if (Node.IsGenerator)
+        {
+            load = Snapshot.GeneratorData.Power + Node.DataSnapshots[Time].Power;
+        }
+        else
+        {
+            load = Node.DataSnapshots[Time].Power;
+        }
+
+        float loadHeight = ConvertPowerToHeight(load);
+
+        float loadScaleY = loadHeight * 0.5f;
+
+        _loadCylinder.transform.localScale = new Vector3(0.5f, loadScaleY, 0.5f);
+
+        float nodeTopLocalY = transform.localScale.y * 0.5f;
+        float gap = 0.15f;
+        float bottomLocalY = nodeTopLocalY + gap;
+        float nodeOffset = 0.75f;
+        float loadOffset = 0.75f;
+
+        _loadCylinder.transform.localPosition = new Vector3(loadOffset, nodeOffset + bottomLocalY + loadHeight * 0.5f, 0f);
+
     }
 }
