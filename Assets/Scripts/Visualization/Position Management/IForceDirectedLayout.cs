@@ -166,7 +166,7 @@ public class ForceDirectedLayout : INodeLayoutAlgorithm
         // Cool temperature
         //----------------------------------------
 
-        _temperature *= 0.99f;
+        _temperature *= 0.995f;
     }
 
 }

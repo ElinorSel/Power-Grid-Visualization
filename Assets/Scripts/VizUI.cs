@@ -6,11 +6,13 @@ public class VizUI : MonoBehaviour
 {
     [SerializeField] TMP_Text minLabel;
     [SerializeField] TMP_Text maxLabel;
+    [SerializeField] UnityEngine.UI.Toggle NodePowerToggle;
     [SerializeField] GameObject hideBackground;
+
 
    public void ToggleLabels()
     {
-        Debug.Log("VIZ UI: trying to sett labels to " + !VisualizationSettings.Instance.ShowLabels);
+        //Debug.Log("VIZ UI: trying to sett labels to " + !VisualizationSettings.Instance.ShowLabels);
         VisualizationSettings.Instance.SetShowLabels(!VisualizationSettings.Instance.ShowLabels);
     }
 
@@ -92,6 +94,21 @@ public class VizUI : MonoBehaviour
         hideBackground.SetActive(!show);
         
     }
+
+    public void SetSingleTimePreset(){
+        VisualizationSettings.Instance.SetShowGeneratorPower(true);
+        NodePowerToggle.isOn = true;
+
+        SetHeightScaleFactor(0.015f);
+        SetEdgeWidthScaleFactor(0.01f);
+        SetSizeScaleFactor(0.09f);
+        SetTimeRange(0f,0f);
+        UpdateTimeRangeMinLabel(0f);
+        UpdateTimeRangeMaxLabel(0f);
+        
+    }
+
+
 
 
 }
