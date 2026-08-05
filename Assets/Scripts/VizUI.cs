@@ -111,6 +111,21 @@ public class VizUI : MonoBehaviour
         UpdateTimeRangeMaxLabel(1f);
         
     }
+        public void SetFiveTimePreset(){
+        VisualizationSettings.Instance.SetShowGeneratorPower(false);
+        NodePowerToggle.SetIsOnWithoutNotify(false);
+
+        SetHeightScaleFactor(0.03433f);
+        SetTimeStepZSize(6f);
+        SetEdgeWidthScaleFactor(0.01f);
+        SetSizeScaleFactor(0.02f);
+
+        timeRangeSlider.SetValueWithoutNotify(1f, 5f);
+        SetTimeRange(1f,5f);
+        UpdateTimeRangeMinLabel(1f);
+        UpdateTimeRangeMaxLabel(5f);
+        
+    }
 
 
 

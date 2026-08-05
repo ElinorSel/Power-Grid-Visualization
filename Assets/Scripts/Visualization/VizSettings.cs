@@ -222,7 +222,7 @@ public void SetShowGeneratorPower(bool show)
     {
         if (nodeHeightScaleFactor == scaleFactor) return;
         nodeHeightScaleFactor = scaleFactor;
-        Debug.Log("VIZ settings: setting heightscale tp" + scaleFactor + ". Invoking Onlabelsettingschanged." );
+        //Debug.Log("VIZ settings: setting heightscale tp" + scaleFactor + ". Invoking Onlabelsettingschanged." );
         OnLayoutChanged?.Invoke();
     }
 

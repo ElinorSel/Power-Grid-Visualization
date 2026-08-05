@@ -84,7 +84,7 @@ public class NodeVisualizer : MonoBehaviour
     
     public void RefreshLabel()
     {
-        Debug.Log("Node visualiser: Setting labels to " + VisualizationSettings.Instance.ShowLabels);
+        //Debug.Log("Node visualiser: Setting labels to " + VisualizationSettings.Instance.ShowLabels);
         nodeIDLabelGO.SetActive(VisualizationSettings.Instance.ShowLabels);
     }
     public void RefreshNodeColor()
@@ -209,7 +209,7 @@ public class NodeVisualizer : MonoBehaviour
 
         _loadCylinder = Instantiate(generatorCylinderPrefab, transform);
         _loadCylinder.name = "LoadCylinder";
-        Debug.Log("instantiated load" + _loadCylinder);
+        //Debug.Log("instantiated load" + _loadCylinder);
 
         if (_loadCylinder.TryGetComponent<MeshRenderer>(out var loadRenderer) &&
             loadMaterial != null)
