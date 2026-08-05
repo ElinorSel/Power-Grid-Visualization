@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UIRangeSliderNamespace;
 using System.Runtime.Serialization;
 
 public class VizUI : MonoBehaviour
@@ -7,6 +8,7 @@ public class VizUI : MonoBehaviour
     [SerializeField] TMP_Text minLabel;
     [SerializeField] TMP_Text maxLabel;
     [SerializeField] UnityEngine.UI.Toggle NodePowerToggle;
+    [SerializeField] UIRangeSlider timeRangeSlider;
     [SerializeField] GameObject hideBackground;
 
 
@@ -97,14 +99,16 @@ public class VizUI : MonoBehaviour
 
     public void SetSingleTimePreset(){
         VisualizationSettings.Instance.SetShowGeneratorPower(true);
-        NodePowerToggle.isOn = true;
+        NodePowerToggle.SetIsOnWithoutNotify(true);
 
         SetHeightScaleFactor(0.015f);
         SetEdgeWidthScaleFactor(0.01f);
         SetSizeScaleFactor(0.09f);
-        SetTimeRange(0f,0f);
-        UpdateTimeRangeMinLabel(0f);
-        UpdateTimeRangeMaxLabel(0f);
+
+        timeRangeSlider.SetValueWithoutNotify(1f, 1f);
+        SetTimeRange(1f,1f);
+        UpdateTimeRangeMinLabel(1f);
+        UpdateTimeRangeMaxLabel(1f);
         
     }
 

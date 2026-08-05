@@ -72,11 +72,11 @@ public class VisualizationSettings : MonoBehaviour
 
     [SerializeField]
     [Tooltip("The earliest time that will show")]
-     private int visibleStartIndex;
+     private int visibleStartIndex = 0;
 
     [SerializeField]
     [Tooltip("The latest time that will show")]
-     private int visibleEndIndex;
+     private int visibleEndIndex = 23;
 
     [SerializeField]
     [Tooltip("Which Algorithm used to calculate node positions")]

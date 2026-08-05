@@ -184,8 +184,6 @@ public class NodeVisualizer : MonoBehaviour
 
     private void SetCylindersVisible(bool visible)
     {
-        if (!_generatorCylindersCreated && _loadCylindersCreated)
-            return;
         
         if (_generatorCylindersCreated)
         {
